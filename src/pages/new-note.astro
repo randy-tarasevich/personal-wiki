@@ -112,11 +112,12 @@ const error = url.searchParams.get('error');
 
                    <!-- Content Field -->
                    <div>
-                     <div class="flex items-center justify-between mb-2">
-                       <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                         Note Content
-                       </label>
-                       <!-- Voice Input Component - Moved to label area -->
+                     <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                       Note Content
+                     </label>
+                     
+                     <!-- Voice Input Component -->
+                     <div class="mb-3">
                        <VoiceInput targetId="content" />
                      </div>
                      
