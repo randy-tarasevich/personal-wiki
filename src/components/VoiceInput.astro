@@ -6,22 +6,11 @@ interface Props {
 const { targetId = 'content' } = Astro.props;
 ---
 
-<div class="voice-input-container">
-  <button
-    id="voice-button"
-    type="button"
-    class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-    aria-label="Start voice input"
-  >
-    <span id="mic-icon" class="text-xl">🎤</span>
-    <span id="status-text" class="text-sm font-medium">Voice Input</span>
-    <span id="target-indicator" class="text-xs opacity-75">→ content</span>
-  </button>
-
+<div class="voice-input-container flex items-center gap-2">
   <!-- Language selector -->
   <select
     id="language-select"
-    class="ml-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm"
+    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm"
   >
     <option value="en-US">English (US)</option>
     <option value="en-GB">English (UK)</option>
@@ -35,11 +24,20 @@ const { targetId = 'content' } = Astro.props;
     <option value="ko-KR">Korean</option>
   </select>
 
+  <button
+    id="voice-button"
+    type="button"
+    class="flex items-center justify-center px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+    aria-label="Start voice input"
+  >
+    <span id="mic-icon" class="text-xl">🎤</span>
+  </button>
+
   <!-- Voice commands help -->
   <button
     id="help-button"
     type="button"
-    class="ml-2 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+    class="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
   >
     ❓ Commands
   </button>
@@ -88,8 +86,6 @@ const { targetId = 'content' } = Astro.props;
 <script define:vars={{ targetId }}>
   const button = document.getElementById('voice-button');
   const micIcon = document.getElementById('mic-icon');
-  const statusText = document.getElementById('status-text');
-  const targetIndicator = document.getElementById('target-indicator');
   const languageSelect = document.getElementById('language-select');
   const helpButton = document.getElementById('help-button');
   const helpModal = document.getElementById('help-modal');
@@ -122,11 +118,6 @@ const { targetId = 'content' } = Astro.props;
     currentTargetId = newTargetId;
     textarea = null; // Reset to force re-detection
     console.log('Voice input target updated to:', newTargetId);
-    
-    // Update visual indicator
-    if (targetIndicator) {
-      targetIndicator.textContent = `→ ${newTargetId}`;
-    }
   }
   
   // Expose updateTarget globally for external use
@@ -141,16 +132,11 @@ const { targetId = 'content' } = Astro.props;
         const targetId = target.id;
         if (targetId && targetId !== currentTargetId) {
           updateTarget(targetId);
-          // Update status to show current target
-          if (statusText) {
-            const originalText = statusText.textContent;
-            statusText.textContent = `Voice → ${targetId}`;
-            setTimeout(() => {
-              if (statusText) {
-                statusText.textContent = originalText;
-              }
-            }, 2000);
-          }
+          // Update button aria-label to show current target
+          button.setAttribute('aria-label', `Voice input → ${targetId}`);
+          setTimeout(() => {
+            button.setAttribute('aria-label', 'Start voice input');
+          }, 2000);
         }
       }
     });
@@ -284,7 +270,7 @@ const { targetId = 'content' } = Astro.props;
     recognition.onstart = () => {
       isListening = true;
       micIcon.textContent = '⏹️';
-      statusText.textContent = 'Listening...';
+      button.setAttribute('aria-label', 'Stop voice input');
       button.classList.add('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
       button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
     };
@@ -345,12 +331,12 @@ const { targetId = 'content' } = Astro.props;
           errorMessage = `Error: ${event.error}`;
       }
       
-      statusText.textContent = errorMessage;
+      button.setAttribute('aria-label', `Voice input error: ${errorMessage}`);
       
       // Reset after showing error
       setTimeout(() => {
         if (!isListening) {
-          statusText.textContent = 'Voice Input';
+          button.setAttribute('aria-label', 'Start voice input');
         }
       }, 3000);
     };
@@ -358,7 +344,7 @@ const { targetId = 'content' } = Astro.props;
     recognition.onend = () => {
       isListening = false;
       micIcon.textContent = '🎤';
-      statusText.textContent = 'Voice Input';
+      button.setAttribute('aria-label', 'Start voice input');
       button.classList.remove('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
       button.classList.add('bg-blue-500', 'hover:bg-blue-600');
       
