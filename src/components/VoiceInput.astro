@@ -298,20 +298,22 @@ const { targetId = 'content' } = Astro.props;
         return;
       }
 
+      // Process results properly to avoid duplication
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         
         if (event.results[i].isFinal) {
+          // Add final transcript to the permanent text
           const processed = processVoiceCommand(transcript);
           finalTranscript += processed;
         } else {
-          interimTranscript += transcript;
+          // Store interim transcript for live preview
+          interimTranscript = transcript;
         }
       }
 
-      // Update textarea with final transcript
-      const baseText = targetTextarea.value.substring(0, targetTextarea.value.length - interimTranscript.length);
-      targetTextarea.value = baseText + finalTranscript + interimTranscript;
+      // Update textarea with final + interim text
+      targetTextarea.value = finalTranscript + interimTranscript;
       
       // Auto-scroll to bottom
       targetTextarea.scrollTop = targetTextarea.scrollHeight;
@@ -360,9 +362,14 @@ const { targetId = 'content' } = Astro.props;
       button.classList.remove('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
       button.classList.add('bg-blue-500', 'hover:bg-blue-600');
       
-      // Save final transcript
+      // Finalize the transcript by adding any remaining interim text
       const targetTextarea = getTextarea();
-      if (finalTranscript && targetTextarea) {
+      if (targetTextarea) {
+        // Ensure any remaining interim text is added to final
+        const currentValue = targetTextarea.value;
+        if (currentValue !== finalTranscript) {
+          finalTranscript = currentValue;
+        }
         targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
         console.log('Final transcript saved:', finalTranscript);
       }
