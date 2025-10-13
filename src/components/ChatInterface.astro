@@ -1,0 +1,101 @@
+---
+// ChatInterface.astro - Ollama Chat Component with Server Islands
+import ServerIsland from './ServerIsland.astro';
+
+// Initial state for the chat
+const initialMessages = [
+  {
+    role: 'system',
+    content: 'Hello! I\'m your AI assistant powered by Ollama. How can I help you today?',
+    timestamp: Date.now()
+  }
+];
+
+const initialState = {
+  messages: initialMessages,
+  selectedModel: 'llama2',
+  error: null
+};
+---
+
+<ServerIsland id="chat-interface" component="ChatInterface" props={initialState} serverAction="chat">
+  <div class="max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900">
+    <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Ollama Chat</h2>
+      <form method="POST" class="inline-block">
+        <input type="hidden" name="action" value="changeModel" />
+        <input type="hidden" name="islandId" value="island-chat-interface" />
+        <select name="model" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="this.form.submit()">
+          <option value="llama2" selected>Llama 2</option>
+          <option value="codellama">Code Llama</option>
+          <option value="mistral">Mistral</option>
+          <option value="phi">Phi</option>
+        </select>
+      </form>
+    </div>
+    
+    <div class="h-96 overflow-y-auto p-6 bg-white dark:bg-gray-800">
+      {initialState.messages.map((message) => (
+        <div class={`mb-4 p-3 rounded-lg max-w-4/5 ${
+          message.role === 'user' 
+            ? 'bg-blue-500 text-white ml-auto text-right' 
+            : message.role === 'assistant'
+            ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-auto'
+            : 'bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto'
+        }`}>
+          <p class="whitespace-pre-wrap">{message.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <form method="POST" class="flex p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 gap-3">
+      <input type="hidden" name="action" value="chat" />
+      <input type="hidden" name="islandId" value="island-chat-interface" />
+      <textarea 
+        name="message"
+        placeholder="Type your message here..." 
+        rows="3"
+        class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required
+      ></textarea>
+      <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium transition-colors">
+        Send
+      </button>
+    </form>
+    
+    <form method="POST" class="text-center pb-4">
+      <input type="hidden" name="action" value="clear" />
+      <input type="hidden" name="islandId" value="island-chat-interface" />
+      <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm transition-colors">
+        Clear Chat
+      </button>
+    </form>
+  </div>
+</ServerIsland>
+
+
+<script>
+  // Server Islands handle all interactions server-side
+  // No client-side JavaScript needed for basic functionality
+  
+  // Optional: Add some client-side enhancements
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-scroll to bottom of chat
+    const chatMessages = document.querySelector('.chat-messages');
+    if (chatMessages) {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Add loading states to forms
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+      form.addEventListener('submit', () => {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.textContent = 'Processing...';
+          submitBtn.setAttribute('disabled', 'true');
+        }
+      });
+    });
+  });
+</script>

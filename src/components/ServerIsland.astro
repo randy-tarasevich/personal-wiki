@@ -1,0 +1,156 @@
+---
+// ServerIsland.astro - Custom Server Islands Implementation
+import { ServerStateManager, handleIslandAction } from '../utils/serverState.js';
+
+const { id, component, props = {}, serverAction } = Astro.props;
+
+// Generate unique island ID
+const islandId = `island-${id}-${Math.random().toString(36).substr(2, 9)}`;
+
+// Server-side state management
+let serverState = { ...props };
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+  const formIslandId = formData.get('islandId');
+  
+  if (action === serverAction && formIslandId === islandId) {
+    // Handle server action
+    serverState = await handleIslandAction(islandId, action, formData);
+  }
+}
+---
+
+<div id={islandId} class="relative" data-island-id={islandId} data-component={component}>
+  <slot />
+</div>
+
+<script define:vars={{ islandId, serverAction, props: JSON.stringify(props) }}>
+  // Client-side hydration for server islands
+  class ServerIsland {
+    constructor(element) {
+      this.element = element;
+      this.islandId = islandId;
+      this.serverAction = serverAction;
+      this.props = props;
+      this.state = { ...this.props };
+      
+      this.init();
+    }
+    
+    init() {
+      // Add event listeners for form submissions
+      const forms = this.element.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('submit', this.handleSubmit.bind(this));
+      });
+      
+      // Add event listeners for interactive elements
+      const buttons = this.element.querySelectorAll('[data-server-action]');
+      buttons.forEach(button => {
+        button.addEventListener('click', this.handleAction.bind(this));
+      });
+    }
+    
+    async handleSubmit(event) {
+      event.preventDefault();
+      this.setLoading(true);
+      
+      const formData = new FormData(event.target);
+      formData.append('action', this.serverAction);
+      formData.append('islandId', this.islandId);
+      
+      try {
+        const response = await fetch(window.location.pathname, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          // Reload the page to get updated server state
+          window.location.reload();
+        } else {
+          this.setError('Server action failed');
+        }
+      } catch (error) {
+        this.setError('Network error');
+      } finally {
+        this.setLoading(false);
+      }
+    }
+    
+    async handleAction(event) {
+      event.preventDefault();
+      this.setLoading(true);
+      
+      const action = event.target.dataset.serverAction;
+      const formData = new FormData();
+      formData.append('action', action);
+      formData.append('islandId', this.islandId);
+      
+      // Add any additional data from the button
+      const data = event.target.dataset;
+      Object.keys(data).forEach(key => {
+        if (key !== 'serverAction') {
+          formData.append(key, data[key]);
+        }
+      });
+      
+      try {
+        const response = await fetch(window.location.pathname, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          this.setError('Server action failed');
+        }
+      } catch (error) {
+        this.setError('Network error');
+      } finally {
+        this.setLoading(false);
+      }
+    }
+    
+    setLoading(loading) {
+      this.element.dataset.loading = loading.toString();
+      if (loading) {
+        this.element.classList.add('opacity-60', 'pointer-events-none');
+      } else {
+        this.element.classList.remove('opacity-60', 'pointer-events-none');
+      }
+    }
+    
+    setError(message) {
+      // Create or update error display
+      let errorEl = this.element.querySelector('.server-island-error');
+      if (!errorEl) {
+        errorEl = document.createElement('div');
+        errorEl.className = 'server-island-error text-red-500 mt-2 p-2 bg-red-50 border border-red-200 rounded';
+        this.element.appendChild(errorEl);
+      }
+      errorEl.textContent = message;
+    }
+    
+    updateState(newState) {
+      this.state = { ...this.state, ...newState };
+      this.render();
+    }
+    
+    render() {
+      // This would re-render the island content based on state
+      // For now, we'll just update the props
+      this.element.dataset.state = JSON.stringify(this.state);
+    }
+  }
+  
+  // Initialize server islands when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    const islandElement = document.getElementById(islandId);
+    if (islandElement) {
+      new ServerIsland(islandElement);
+    }
+  });
+</script>
