@@ -15,6 +15,7 @@ const { targetId = 'content' } = Astro.props;
   >
     <span id="mic-icon" class="text-xl">🎤</span>
     <span id="status-text" class="text-sm font-medium">Voice Input</span>
+    <span id="target-indicator" class="text-xs opacity-75">→ content</span>
   </button>
 
   <!-- Language selector -->
@@ -88,23 +89,101 @@ const { targetId = 'content' } = Astro.props;
   const button = document.getElementById('voice-button');
   const micIcon = document.getElementById('mic-icon');
   const statusText = document.getElementById('status-text');
+  const targetIndicator = document.getElementById('target-indicator');
   const languageSelect = document.getElementById('language-select');
   const helpButton = document.getElementById('help-button');
   const helpModal = document.getElementById('help-modal');
   const closeModal = document.getElementById('close-modal');
   
-  // Get textarea with better error handling
+  // Get textarea with better error handling and dynamic detection
   let textarea = null;
+  let currentTargetId = targetId;
+  
   function getTextarea() {
+    // Always check for the current target textarea
+    const currentTextarea = document.getElementById(currentTargetId);
+    if (currentTextarea && currentTextarea !== textarea) {
+      textarea = currentTextarea;
+      console.log('Textarea changed to:', currentTargetId);
+    }
+    
     if (!textarea) {
-      textarea = document.getElementById(targetId);
+      textarea = document.getElementById(currentTargetId);
       if (!textarea) {
-        console.error(`Textarea with id "${targetId}" not found`);
+        console.error(`Textarea with id "${currentTargetId}" not found`);
         return null;
       }
     }
     return textarea;
   }
+  
+  // Function to update target textarea dynamically
+  function updateTarget(newTargetId) {
+    currentTargetId = newTargetId;
+    textarea = null; // Reset to force re-detection
+    console.log('Voice input target updated to:', newTargetId);
+    
+    // Update visual indicator
+    if (targetIndicator) {
+      targetIndicator.textContent = `→ ${newTargetId}`;
+    }
+  }
+  
+  // Expose updateTarget globally for external use
+  window.updateVoiceTarget = updateTarget;
+  
+  // Auto-detect textarea changes by monitoring focus events
+  function setupTextareaDetection() {
+    // Monitor all textareas and text inputs for focus
+    document.addEventListener('focusin', (event) => {
+      const target = event.target;
+      if (target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT')) {
+        const targetId = target.id;
+        if (targetId && targetId !== currentTargetId) {
+          updateTarget(targetId);
+          // Update status to show current target
+          if (statusText) {
+            const originalText = statusText.textContent;
+            statusText.textContent = `Voice → ${targetId}`;
+            setTimeout(() => {
+              if (statusText) {
+                statusText.textContent = originalText;
+              }
+            }, 2000);
+          }
+        }
+      }
+    });
+    
+    // Also monitor for page changes (SPA navigation)
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          // Check if new textareas were added
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) { // Element node
+              const textareas = node.querySelectorAll ? node.querySelectorAll('textarea, input[type="text"]') : [];
+              textareas.forEach((textarea) => {
+                if (textarea.id && textarea.id !== currentTargetId) {
+                  console.log('New textarea detected:', textarea.id);
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    console.log('Textarea detection setup complete');
+  }
+  
+  // Initialize textarea detection
+  setupTextareaDetection();
 
   // Check if browser supports speech recognition
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
