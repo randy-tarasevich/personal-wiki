@@ -1,6 +1,7 @@
 ---
 // new-note.astro - Create a new note page
 import DarkModeToggle from '../components/DarkModeToggle.astro';
+import VoiceInput from '../components/VoiceInput.astro';
 import '../styles/global.css';
 
 // Handle form submission
@@ -109,20 +110,26 @@ const error = url.searchParams.get('error');
               />
             </div>
 
-            <!-- Content Field -->
-            <div>
-              <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Note Content
-              </label>
-              <textarea
-                id="content"
-                name="content"
-                rows="12"
-                placeholder="Write your note content here... You can use markdown formatting."
-                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-                required
-              ></textarea>
-            </div>
+                   <!-- Content Field -->
+                   <div>
+                     <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                       Note Content
+                     </label>
+                     
+                     <!-- Voice Input Component -->
+                     <div class="mb-3">
+                       <VoiceInput targetId="content" />
+                     </div>
+                     
+                     <textarea
+                       id="content"
+                       name="content"
+                       rows="12"
+                       placeholder="Write your note content here... You can use markdown formatting."
+                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                       required
+                     ></textarea>
+                   </div>
 
             <!-- Tags Field -->
             <div>

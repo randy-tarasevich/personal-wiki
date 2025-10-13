@@ -1,6 +1,7 @@
 ---
 // note/[slug]/edit.astro - Edit a specific note
 import DarkModeToggle from '../../../components/DarkModeToggle.astro';
+import VoiceInput from '../../../components/VoiceInput.astro';
 import db from '../../../lib/db.js';
 import '../../../styles/global.css';
 
@@ -174,6 +175,12 @@ const error = url.searchParams.get('error');
               <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Note Content
               </label>
+              
+              <!-- Voice Input Component -->
+              <div class="mb-3">
+                <VoiceInput targetId="content" />
+              </div>
+              
               <textarea
                 id="content"
                 name="content"

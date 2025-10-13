@@ -10,24 +10,28 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 ## ✨ Features
 
 ### 🤖 AI-Powered Intelligence
+
 - **Ollama Integration**: Chat with local AI models using Ollama
 - **Semantic Search**: AI-powered search that understands meaning and context
 - **Smart Tag Suggestions**: AI-generated tags for better note organization
 - **Related Notes**: Discover connections between your notes automatically
 
 ### 📝 Note Management
+
 - **Create & Edit Notes**: Rich text note creation with markdown support
 - **Tag System**: Organize notes with custom tags and AI suggestions
 - **Search & Filter**: Find notes quickly with text and semantic search
 - **CRUD Operations**: Full create, read, update, delete functionality
 
 ### 🎨 Modern Interface
+
 - **Dark Mode**: Beautiful dark/light theme toggle
 - **Responsive Design**: Works perfectly on desktop and mobile
 - **Server Islands**: Interactive server-side components
 - **Tailwind CSS**: Modern, utility-first styling
 
 ### 🔍 Advanced Search
+
 - **Text Search**: Fast keyword matching with relevance scoring
 - **AI Semantic Search**: Understands meaning and finds conceptually related content
 - **Tag Filtering**: Search by tags and categories
@@ -37,34 +41,39 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - Ollama installed and running locally
 - Git
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/randy-tarasevich/personal-wiki.git
    cd personal-wiki
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start Ollama** (in a separate terminal)
+
    ```bash
    ollama serve
    ```
 
 4. **Pull a model** (e.g., Llama 2)
+
    ```bash
    ollama pull llama2
    ```
 
 5. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -117,18 +126,21 @@ personal-wiki/
 ## 🎯 Usage
 
 ### Creating Notes
+
 1. Click "New Note" or navigate to `/new-note`
 2. Enter a title and content
 3. Add tags manually or use AI suggestions
 4. Save your note
 
 ### Searching Notes
+
 1. Use the search bar in the navigation
 2. Choose between text search and AI semantic search
 3. View results with relevance scoring
 4. Click on notes to view full content
 
 ### AI Chat
+
 1. Use the chat interface on the home page
 2. Select an AI model (requires Ollama running)
 3. Chat with the AI about your notes and knowledge
@@ -137,13 +149,17 @@ personal-wiki/
 ## 🔧 Configuration
 
 ### Ollama Models
+
 The application works with various Ollama models. Popular choices:
+
 - `llama2` - General purpose, good for chat and analysis
 - `codellama` - Specialized for code-related content
 - `mistral` - Fast and efficient for general tasks
 
 ### Database
+
 The SQLite database is automatically created on first run. It includes:
+
 - `notes` table for note content
 - `tags` table for tag management
 - `note_tags` table for many-to-many relationships
@@ -151,17 +167,20 @@ The SQLite database is automatically created on first run. It includes:
 ## 🚀 Deployment
 
 ### Local Development
+
 ```bash
 npm run dev
 ```
 
 ### Production Build
+
 ```bash
 npm run build
 npm run preview
 ```
 
 ### Deployment Options
+
 - **Vercel**: Zero-config deployment for Astro
 - **Netlify**: Static site hosting with serverless functions
 - **GitHub Pages**: Free hosting for public repositories
@@ -189,6 +208,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 📞 Support
 
 If you encounter any issues or have questions:
+
 1. Check the [Issues](https://github.com/randy-tarasevich/personal-wiki/issues) page
 2. Create a new issue with detailed information
 3. Make sure Ollama is running and accessible

@@ -1,0 +1,289 @@
+---
+interface Props {
+  targetId?: string; // ID of textarea to insert text into
+}
+
+const { targetId = 'content' } = Astro.props;
+---
+
+<div class="voice-input-container">
+  <button
+    id="voice-button"
+    type="button"
+    class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+    aria-label="Start voice input"
+  >
+    <span id="mic-icon" class="text-xl">🎤</span>
+    <span id="status-text" class="text-sm font-medium">Voice Input</span>
+  </button>
+
+  <!-- Language selector -->
+  <select
+    id="language-select"
+    class="ml-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm"
+  >
+    <option value="en-US">English (US)</option>
+    <option value="en-GB">English (UK)</option>
+    <option value="es-ES">Spanish</option>
+    <option value="fr-FR">French</option>
+    <option value="de-DE">German</option>
+    <option value="it-IT">Italian</option>
+    <option value="pt-BR">Portuguese (Brazil)</option>
+    <option value="ja-JP">Japanese</option>
+    <option value="zh-CN">Chinese (Simplified)</option>
+    <option value="ko-KR">Korean</option>
+  </select>
+
+  <!-- Voice commands help -->
+  <button
+    id="help-button"
+    type="button"
+    class="ml-2 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+  >
+    ❓ Commands
+  </button>
+</div>
+
+<!-- Help Modal -->
+<div id="help-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4">
+    <h3 class="text-xl font-bold mb-4">Voice Commands</h3>
+    <div class="space-y-3 text-sm">
+      <div>
+        <strong>Punctuation:</strong>
+        <ul class="ml-4 mt-1 space-y-1">
+          <li>• Say "period" or "full stop" → .</li>
+          <li>• Say "comma" → ,</li>
+          <li>• Say "question mark" → ?</li>
+          <li>• Say "exclamation mark" or "exclamation point" → !</li>
+          <li>• Say "new line" or "new paragraph" → line break</li>
+        </ul>
+      </div>
+      <div>
+        <strong>Text Commands:</strong>
+        <ul class="ml-4 mt-1 space-y-1">
+          <li>• Say "clear text" → clears all text</li>
+          <li>• Say "undo" → removes last sentence</li>
+        </ul>
+      </div>
+      <div>
+        <strong>Tips:</strong>
+        <ul class="ml-4 mt-1 space-y-1">
+          <li>• Speak clearly and at normal pace</li>
+          <li>• Click stop when finished</li>
+          <li>• Text appears as you speak</li>
+        </ul>
+      </div>
+    </div>
+    <button
+      id="close-modal"
+      class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+    >
+      Got it!
+    </button>
+  </div>
+</div>
+
+<script define:vars={{ targetId }}>
+  const button = document.getElementById('voice-button');
+  const micIcon = document.getElementById('mic-icon');
+  const statusText = document.getElementById('status-text');
+  const languageSelect = document.getElementById('language-select');
+  const helpButton = document.getElementById('help-button');
+  const helpModal = document.getElementById('help-modal');
+  const closeModal = document.getElementById('close-modal');
+  const textarea = document.getElementById(targetId);
+
+  // Check if browser supports speech recognition
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    button.disabled = true;
+    statusText.textContent = 'Not supported';
+    languageSelect.disabled = true;
+    console.error('Speech Recognition not supported in this browser');
+  } else {
+    const recognition = new SpeechRecognition();
+    
+    // Configuration
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = languageSelect.value;
+    recognition.maxAlternatives = 1;
+
+    let isListening = false;
+    let finalTranscript = '';
+
+    // Language change handler
+    languageSelect.addEventListener('change', () => {
+      recognition.lang = languageSelect.value;
+      // Save preference
+      localStorage.setItem('voiceInputLanguage', languageSelect.value);
+    });
+
+    // Load saved language preference
+    const savedLang = localStorage.getItem('voiceInputLanguage');
+    if (savedLang) {
+      languageSelect.value = savedLang;
+      recognition.lang = savedLang;
+    }
+
+    // Voice command processing
+    function processVoiceCommand(text) {
+      const lowerText = text.toLowerCase().trim();
+      
+      // Punctuation commands
+      if (lowerText.includes('period') || lowerText.includes('full stop')) {
+        return text.replace(/period|full stop/gi, '.') + ' ';
+      }
+      if (lowerText.includes('comma')) {
+        return text.replace(/comma/gi, ',') + ' ';
+      }
+      if (lowerText.includes('question mark')) {
+        return text.replace(/question mark/gi, '?') + ' ';
+      }
+      if (lowerText.includes('exclamation mark') || lowerText.includes('exclamation point')) {
+        return text.replace(/exclamation mark|exclamation point/gi, '!') + ' ';
+      }
+      if (lowerText.includes('new line') || lowerText.includes('new paragraph')) {
+        return '\n\n';
+      }
+      
+      // Text commands
+      if (lowerText === 'clear text' || lowerText === 'clear all') {
+        textarea.value = '';
+        finalTranscript = '';
+        return '';
+      }
+      if (lowerText === 'undo' || lowerText === 'delete last') {
+        const sentences = textarea.value.split('. ');
+        sentences.pop();
+        textarea.value = sentences.join('. ');
+        if (textarea.value && !textarea.value.endsWith('.')) {
+          textarea.value += '.';
+        }
+        return '';
+      }
+      
+      return text + ' ';
+    }
+
+    // Start/Stop button
+    button.addEventListener('click', () => {
+      if (isListening) {
+        recognition.stop();
+      } else {
+        finalTranscript = '';
+        try {
+          recognition.start();
+        } catch (error) {
+          console.error('Recognition start error:', error);
+        }
+      }
+    });
+
+    recognition.onstart = () => {
+      isListening = true;
+      micIcon.textContent = '⏹️';
+      statusText.textContent = 'Listening...';
+      button.classList.add('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
+      button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+    };
+
+    recognition.onresult = (event) => {
+      let interimTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        
+        if (event.results[i].isFinal) {
+          const processed = processVoiceCommand(transcript);
+          finalTranscript += processed;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      // Update textarea with final transcript
+      const baseText = textarea.value.substring(0, textarea.value.length - interimTranscript.length);
+      textarea.value = baseText + finalTranscript + interimTranscript;
+      
+      // Auto-scroll to bottom
+      textarea.scrollTop = textarea.scrollHeight;
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      
+      let errorMessage = 'Error';
+      switch(event.error) {
+        case 'no-speech':
+          errorMessage = 'No speech detected';
+          break;
+        case 'audio-capture':
+          errorMessage = 'Microphone error';
+          break;
+        case 'not-allowed':
+          errorMessage = 'Microphone permission denied';
+          break;
+        case 'network':
+          errorMessage = 'Network error';
+          break;
+        default:
+          errorMessage = `Error: ${event.error}`;
+      }
+      
+      statusText.textContent = errorMessage;
+      
+      // Reset after showing error
+      setTimeout(() => {
+        if (!isListening) {
+          statusText.textContent = 'Voice Input';
+        }
+      }, 3000);
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      micIcon.textContent = '🎤';
+      statusText.textContent = 'Voice Input';
+      button.classList.remove('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
+      button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+      
+      // Save final transcript
+      if (finalTranscript) {
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+  }
+
+  // Help modal handlers
+  helpButton.addEventListener('click', () => {
+    helpModal.classList.remove('hidden');
+  });
+
+  closeModal.addEventListener('click', () => {
+    helpModal.classList.add('hidden');
+  });
+
+  helpModal.addEventListener('click', (e) => {
+    if (e.target === helpModal) {
+      helpModal.classList.remove('hidden');
+    }
+  });
+</script>
+
+<style>
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: .7;
+    }
+  }
+</style>
