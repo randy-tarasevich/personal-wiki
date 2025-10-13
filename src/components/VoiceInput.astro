@@ -92,10 +92,27 @@ const { targetId = 'content' } = Astro.props;
   const helpButton = document.getElementById('help-button');
   const helpModal = document.getElementById('help-modal');
   const closeModal = document.getElementById('close-modal');
-  const textarea = document.getElementById(targetId);
+  
+  // Get textarea with better error handling
+  let textarea = null;
+  function getTextarea() {
+    if (!textarea) {
+      textarea = document.getElementById(targetId);
+      if (!textarea) {
+        console.error(`Textarea with id "${targetId}" not found`);
+        return null;
+      }
+    }
+    return textarea;
+  }
 
   // Check if browser supports speech recognition
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  // Debug: Log component initialization
+  console.log('VoiceInput component initializing...');
+  console.log('Target ID:', targetId);
+  console.log('Textarea found:', !!getTextarea());
 
   if (!SpeechRecognition) {
     button.disabled = true;
@@ -131,6 +148,9 @@ const { targetId = 'content' } = Astro.props;
     // Voice command processing
     function processVoiceCommand(text) {
       const lowerText = text.toLowerCase().trim();
+      const targetTextarea = getTextarea();
+      
+      if (!targetTextarea) return text + ' ';
       
       // Punctuation commands
       if (lowerText.includes('period') || lowerText.includes('full stop')) {
@@ -151,16 +171,16 @@ const { targetId = 'content' } = Astro.props;
       
       // Text commands
       if (lowerText === 'clear text' || lowerText === 'clear all') {
-        textarea.value = '';
+        targetTextarea.value = '';
         finalTranscript = '';
         return '';
       }
       if (lowerText === 'undo' || lowerText === 'delete last') {
-        const sentences = textarea.value.split('. ');
+        const sentences = targetTextarea.value.split('. ');
         sentences.pop();
-        textarea.value = sentences.join('. ');
-        if (textarea.value && !textarea.value.endsWith('.')) {
-          textarea.value += '.';
+        targetTextarea.value = sentences.join('. ');
+        if (targetTextarea.value && !targetTextarea.value.endsWith('.')) {
+          targetTextarea.value += '.';
         }
         return '';
       }
@@ -192,6 +212,12 @@ const { targetId = 'content' } = Astro.props;
 
     recognition.onresult = (event) => {
       let interimTranscript = '';
+      const targetTextarea = getTextarea();
+      
+      if (!targetTextarea) {
+        console.error('Textarea not found during result processing');
+        return;
+      }
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
@@ -205,11 +231,16 @@ const { targetId = 'content' } = Astro.props;
       }
 
       // Update textarea with final transcript
-      const baseText = textarea.value.substring(0, textarea.value.length - interimTranscript.length);
-      textarea.value = baseText + finalTranscript + interimTranscript;
+      const baseText = targetTextarea.value.substring(0, targetTextarea.value.length - interimTranscript.length);
+      targetTextarea.value = baseText + finalTranscript + interimTranscript;
       
       // Auto-scroll to bottom
-      textarea.scrollTop = textarea.scrollHeight;
+      targetTextarea.scrollTop = targetTextarea.scrollHeight;
+      
+      // Trigger input event to notify other scripts
+      targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+      
+      console.log('Voice input updated:', targetTextarea.value);
     };
 
     recognition.onerror = (event) => {
@@ -251,8 +282,10 @@ const { targetId = 'content' } = Astro.props;
       button.classList.add('bg-blue-500', 'hover:bg-blue-600');
       
       // Save final transcript
-      if (finalTranscript) {
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      const targetTextarea = getTextarea();
+      if (finalTranscript && targetTextarea) {
+        targetTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+        console.log('Final transcript saved:', finalTranscript);
       }
     };
   }
