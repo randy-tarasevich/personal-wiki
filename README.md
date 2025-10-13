@@ -6,8 +6,18 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?style=flat-square&logo=tailwind-css)
 ![Ollama](https://img.shields.io/badge/Ollama-AI-000000?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
+![Voice Input](https://img.shields.io/badge/Voice--to--Text-Enabled-00C851?style=flat-square&logo=speech-recognition)
 
 ## ✨ Features
+
+### 🎤 Voice-to-Text Capabilities
+
+- **Voice Input**: Speak your notes directly using browser speech recognition
+- **Multi-Language Support**: 10+ languages including English, Spanish, French, German, and more
+- **Voice Commands**: Control punctuation and formatting with voice ("period", "comma", "new line")
+- **Real-time Transcription**: See your words appear as you speak
+- **Smart Text Processing**: Automatic punctuation and formatting
+- **Dynamic Target Detection**: Automatically switches between different text fields
 
 ### 🤖 AI-Powered Intelligence
 
@@ -19,6 +29,7 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 ### 📝 Note Management
 
 - **Create & Edit Notes**: Rich text note creation with markdown support
+- **Voice Note Creation**: Dictate notes hands-free for faster content creation
 - **Tag System**: Organize notes with custom tags and AI suggestions
 - **Search & Filter**: Find notes quickly with text and semantic search
 - **CRUD Operations**: Full create, read, update, delete functionality
@@ -29,6 +40,7 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 - **Responsive Design**: Works perfectly on desktop and mobile
 - **Server Islands**: Interactive server-side components
 - **Tailwind CSS**: Modern, utility-first styling
+- **Accessibility**: Full keyboard navigation and screen reader support
 
 ### 🔍 Advanced Search
 
@@ -145,6 +157,14 @@ personal-wiki/
 2. Select an AI model (requires Ollama running)
 3. Chat with the AI about your notes and knowledge
 4. Get intelligent responses and insights
+
+### Voice Input
+
+1. Click the microphone icon in the voice input controls
+2. Allow microphone permissions when prompted
+3. Speak clearly and naturally
+4. Use voice commands for punctuation ("period", "comma", "new line")
+5. Click stop when finished speaking
 
 ## 🔧 Configuration
 
