@@ -27,7 +27,7 @@ const { targetId = 'content' } = Astro.props;
   <button
     id="voice-button"
     type="button"
-    class="flex items-center justify-center px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+    class="flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
     aria-label="Start voice input"
   >
     <span id="mic-icon" class="text-xl">🎤</span>
@@ -271,8 +271,9 @@ const { targetId = 'content' } = Astro.props;
       isListening = true;
       micIcon.textContent = '⏹️';
       button.setAttribute('aria-label', 'Stop voice input');
-      button.classList.add('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
-      button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+      button.classList.add('animate-pulse');
+      button.classList.remove('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600');
+      button.classList.add('bg-gradient-to-r', 'from-red-500', 'to-pink-500', 'hover:from-red-600', 'hover:to-pink-600');
     };
 
     recognition.onresult = (event) => {
@@ -345,8 +346,8 @@ const { targetId = 'content' } = Astro.props;
       isListening = false;
       micIcon.textContent = '🎤';
       button.setAttribute('aria-label', 'Start voice input');
-      button.classList.remove('animate-pulse', 'bg-red-500', 'hover:bg-red-600');
-      button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+      button.classList.remove('animate-pulse', 'bg-gradient-to-r', 'from-red-500', 'to-pink-500', 'hover:from-red-600', 'hover:to-pink-600');
+      button.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600');
       
       // Finalize the transcript by adding any remaining interim text
       const targetTextarea = getTextarea();

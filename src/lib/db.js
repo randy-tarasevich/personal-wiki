@@ -30,6 +30,22 @@ db.exec(`
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
     PRIMARY KEY (note_id, tag_id)
   );
+
+  CREATE TABLE IF NOT EXISTS chat_conversations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS chat_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id INTEGER,
+    role TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE
+  );
 `);
 
 export default db;

@@ -1,47 +1,89 @@
 ---
 // ChatInterface.astro - Simple Ollama Chat Component
 ---
-<div class="max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900">
-    <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
-      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Ollama Chat</h2>
-      <form method="POST" class="inline-block">
-        <input type="hidden" name="action" value="changeModel" />
-        <input type="hidden" name="islandId" value="island-chat-interface" />
-        <select name="model" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="this.form.submit()">
-          <option value="llama2" selected>Llama 2</option>
-          <option value="codellama">Code Llama</option>
-          <option value="mistral">Mistral</option>
-          <option value="phi">Phi</option>
-        </select>
-      </form>
-    </div>
-    
-    <div id="chat-messages" class="h-96 overflow-y-auto p-6 bg-white dark:bg-gray-800">
-      <div class="mb-4 p-3 rounded-lg max-w-4/5 bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto">
-        <p class="whitespace-pre-wrap">Hello! I'm your AI assistant powered by Ollama. How can I help you today?</p>
+<div class="max-w-4xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-700/80 dark:to-gray-600/80 px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200/50 dark:border-gray-600/50">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent text-center sm:text-left">AI Assistant</h2>
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+        <button 
+          id="clear-chat-button"
+          class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+        >
+          Clear Chat
+        </button>
+        <form method="POST" class="w-full sm:w-auto inline-block">
+          <input type="hidden" name="action" value="changeModel" />
+          <input type="hidden" name="islandId" value="island-chat-interface" />
+          <select name="model" class="w-full sm:w-auto px-4 py-2 border border-gray-200/50 dark:border-gray-600/50 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-gray-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-md">
+            <!-- Latest Models -->
+            <option value="llama3" selected>Llama 3 (8B) - Latest</option>
+            <option value="llama3:70b">Llama 3 (70B) - Most Capable</option>
+            <option value="llama2">Llama 2 (7B)</option>
+            
+            <!-- Mistral Models -->
+            <option value="mistral">Mistral (7B)</option>
+            <option value="mixtral:8x7b">Mixtral 8x7B - Best Reasoning</option>
+            <option value="mistral-nemo">Mistral Nemo</option>
+            
+            <!-- Microsoft Phi Models -->
+            <option value="phi3">Phi 3 (3.8B) - Fast & Efficient</option>
+            <option value="phi3:mini">Phi 3 Mini</option>
+            <option value="phi3:medium">Phi 3 Medium</option>
+            <option value="phi">Phi (Original)</option>
+            
+            <!-- Google Gemma Models -->
+            <option value="gemma:2b">Gemma 2B - Lightweight</option>
+            <option value="gemma:7b">Gemma 7B - Balanced</option>
+            
+            <!-- Code-Specific Models -->
+            <option value="codellama">Code Llama (7B)</option>
+            <option value="codellama:13b">Code Llama (13B)</option>
+            <option value="deepseek-coder">DeepSeek Coder</option>
+            
+            <!-- Specialized Models -->
+            <option value="neural-chat">Neural Chat</option>
+            <option value="orca-mini">Orca Mini</option>
+            <option value="dolphin-mistral">Dolphin Mistral</option>
+          </select>
+        </form>
       </div>
     </div>
     
-    <form id="chat-form" class="flex p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 gap-3">
-      <div class="flex-1 flex gap-2">
+    <div id="chat-messages" class="h-96 overflow-y-auto p-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+      <div class="mb-6 p-6 rounded-2xl max-w-4/5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 text-gray-600 dark:text-blue-300 text-center mx-auto border border-blue-200/50 dark:border-blue-700/50 shadow-sm">
+        <div class="flex items-center justify-center mb-3">
+          <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          <span class="font-semibold text-blue-600 dark:text-blue-400">AI Assistant</span>
+        </div>
+        <p class="whitespace-pre-wrap text-sm leading-relaxed">Hello! I'm your AI assistant powered by Ollama. How can I help you today?</p>
+      </div>
+    </div>
+    
+    <form id="chat-form" class="flex flex-col sm:flex-row p-4 sm:p-6 bg-gradient-to-r from-gray-50/80 to-blue-50/80 dark:from-gray-700/80 dark:to-gray-600/80 border-t border-gray-200/50 dark:border-gray-600/50 gap-4">
+      <div class="flex flex-col sm:flex-row flex-1 gap-3">
         <textarea 
           id="chat-message"
           name="message"
           placeholder="Type your message here..." 
           rows="3"
-          class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="flex-1 px-4 py-3 border border-gray-200/50 dark:border-gray-600/50 rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-md"
           required
         ></textarea>
         <button 
           type="button" 
           id="voice-button"
-          class="flex items-center justify-center px-3 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full sm:w-auto flex items-center justify-center px-4 py-3 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           aria-label="Start voice input"
         >
           <span id="mic-icon" class="text-xl">🎤</span>
         </button>
       </div>
-      <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium transition-colors">
+      <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-semibold transition-all duration-300">
         Send
       </button>
     </form>
@@ -73,6 +115,14 @@
         }
       });
     });
+
+    // Generate or retrieve session ID for conversation memory
+    let sessionId = localStorage.getItem('chatSessionId');
+    if (!sessionId) {
+      sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('chatSessionId', sessionId);
+    }
+    console.log('Session ID:', sessionId);
 
     // Chat form submission
     const chatForm = document.getElementById('chat-form');
@@ -148,10 +198,19 @@
         
         try {
             
+          // Get the selected model from the dropdown
+          const modelSelect = document.querySelector('select[name="model"]');
+          const selectedModel = modelSelect ? modelSelect.value : 'llama3';
+          console.log(`🎯 Selected model: ${selectedModel}`);
+          
           const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: finalMessage, model: 'llama2' })
+            body: JSON.stringify({ 
+              message: finalMessage, 
+              model: selectedModel,
+              sessionId: sessionId
+            })
           });
           
           if (response.ok) {
@@ -285,8 +344,8 @@
           isListening = true;
           micIcon.textContent = '🔴';
           voiceButton.setAttribute('aria-label', 'Stop voice input');
-          voiceButton.classList.add('bg-red-500', 'hover:bg-red-600');
-          voiceButton.classList.remove('bg-green-500', 'hover:bg-green-600');
+          voiceButton.classList.remove('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600');
+          voiceButton.classList.add('bg-gradient-to-r', 'from-red-500', 'to-pink-500', 'hover:from-red-600', 'hover:to-pink-600');
         };
 
         recognition.onresult = (event) => {
@@ -315,8 +374,8 @@
           isListening = false;
           micIcon.textContent = '🎤';
           voiceButton.setAttribute('aria-label', 'Start voice input');
-          voiceButton.classList.add('bg-green-500', 'hover:bg-green-600');
-          voiceButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+          voiceButton.classList.remove('bg-gradient-to-r', 'from-red-500', 'to-pink-500', 'hover:from-red-600', 'hover:to-pink-600');
+          voiceButton.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600');
         };
 
         recognition.onerror = (event) => {
@@ -324,8 +383,8 @@
           isListening = false;
           micIcon.textContent = '🎤';
           voiceButton.setAttribute('aria-label', 'Start voice input');
-          voiceButton.classList.add('bg-green-500', 'hover:bg-green-600');
-          voiceButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+          voiceButton.classList.remove('bg-gradient-to-r', 'from-red-500', 'to-pink-500', 'hover:from-red-600', 'hover:to-pink-600');
+          voiceButton.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-500', 'hover:from-green-600', 'hover:to-emerald-600');
         };
 
         voiceButton.addEventListener('click', () => {
@@ -353,16 +412,16 @@
       if (!chatContainer) return;
       
       const messageDiv = document.createElement('div');
-      messageDiv.className = `mb-4 p-3 rounded-lg max-w-4/5 ${
+      messageDiv.className = `mb-6 p-6 rounded-2xl max-w-4/5 shadow-lg transition-all duration-300 ${
         role === 'user' 
-          ? 'bg-blue-500 text-white ml-auto text-right' 
+          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white ml-auto text-right shadow-blue-500/25' 
           : role === 'assistant'
-          ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-auto'
-          : 'bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto'
+          ? 'bg-gradient-to-r from-gray-100 to-blue-50 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-gray-200 mr-auto border border-gray-200/50 dark:border-gray-600/50'
+          : 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto border border-yellow-200/50 dark:border-yellow-700/50'
       }`;
       
       const contentP = document.createElement('p');
-      contentP.className = 'whitespace-pre-wrap';
+      contentP.className = 'whitespace-pre-wrap leading-relaxed text-sm';
       contentP.textContent = content;
       messageDiv.appendChild(contentP);
       
@@ -373,6 +432,27 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
       
       console.log('Message added to chat container');
+    }
+
+    // Clear chat button functionality
+    const clearChatButton = document.getElementById('clear-chat-button');
+    if (clearChatButton) {
+      clearChatButton.addEventListener('click', () => {
+        // Clear the chat messages container
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) {
+          chatContainer.innerHTML = `
+            <div class="mb-4 p-3 rounded-lg max-w-4/5 bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto">
+              <p class="whitespace-pre-wrap">Hello! I'm your AI assistant powered by Ollama. How can I help you today?</p>
+            </div>
+          `;
+        }
+        
+        // Generate new session ID to clear conversation memory
+        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('chatSessionId', sessionId);
+        console.log('New session ID:', sessionId);
+      });
     }
   });
 </script>
