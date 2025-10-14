@@ -10,7 +10,7 @@ const { targetId = 'content' } = Astro.props;
   <!-- Language selector -->
   <select
     id="language-select"
-    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm"
+    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
   >
     <option value="en-US">English (US)</option>
     <option value="en-GB">English (UK)</option>
@@ -37,7 +37,7 @@ const { targetId = 'content' } = Astro.props;
   <button
     id="help-button"
     type="button"
-    class="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+    class="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white transition-colors text-sm"
   >
     ❓ Commands
   </button>
@@ -46,8 +46,8 @@ const { targetId = 'content' } = Astro.props;
 <!-- Help Modal -->
 <div id="help-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md mx-4">
-    <h3 class="text-xl font-bold mb-4">Voice Commands</h3>
-    <div class="space-y-3 text-sm">
+    <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Voice Commands</h3>
+    <div class="space-y-3 text-sm text-gray-900 dark:text-white">
       <div>
         <strong>Punctuation:</strong>
         <ul class="ml-4 mt-1 space-y-1">

@@ -2,9 +2,9 @@
 // ChatInterface.astro - Simple Ollama Chat Component
 ---
 <div class="max-w-4xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden">
-    <div class="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-700/80 dark:to-gray-600/80 px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200/50 dark:border-gray-600/50">
-      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent text-center sm:text-left">AI Assistant</h2>
+  <div class="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-700/80 dark:to-gray-600/80 px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200/50 dark:border-gray-600/50">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <h2 id="chat-heading" class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent text-center sm:text-left">AI Assistant</h2>
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
         <button 
           id="clear-chat-button"
@@ -50,11 +50,11 @@
       </div>
     </div>
     
-    <div id="chat-messages" class="h-96 overflow-y-auto p-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+    <div id="chat-messages" class="h-96 overflow-y-auto p-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm" aria-live="polite" aria-atomic="false">
       <div class="mb-6 p-6 rounded-2xl max-w-4/5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 text-gray-600 dark:text-blue-300 text-center mx-auto border border-blue-200/50 dark:border-blue-700/50 shadow-sm">
         <div class="flex items-center justify-center mb-3">
           <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3">
-            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
             </svg>
           </div>

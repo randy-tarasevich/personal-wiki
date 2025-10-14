@@ -12,7 +12,9 @@
     "@astrojs/node": "^9.4.6",
     "@astrojs/tailwind": "^6.0.2",
     "astro": "^5.14.4",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.4.1",
+    "cookie": "^1.0.2",
     "ollama": "^0.6.0",
     "slugify": "^1.6.6"
   },
