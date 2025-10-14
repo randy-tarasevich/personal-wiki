@@ -1,25 +1,7 @@
 ---
-// ChatInterface.astro - Ollama Chat Component with Server Islands
-import ServerIsland from './ServerIsland.astro';
-
-// Initial state for the chat
-const initialMessages = [
-  {
-    role: 'system',
-    content: 'Hello! I\'m your AI assistant powered by Ollama. How can I help you today?',
-    timestamp: Date.now()
-  }
-];
-
-const initialState = {
-  messages: initialMessages,
-  selectedModel: 'llama2',
-  error: null
-};
+// ChatInterface.astro - Simple Ollama Chat Component
 ---
-
-<ServerIsland id="chat-interface" component="ChatInterface" props={initialState} serverAction="chat">
-  <div class="max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900">
+<div class="max-w-4xl mx-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900">
     <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
       <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Ollama Chat</h2>
       <form method="POST" class="inline-block">
@@ -34,44 +16,36 @@ const initialState = {
       </form>
     </div>
     
-    <div class="h-96 overflow-y-auto p-6 bg-white dark:bg-gray-800">
-      {initialState.messages.map((message) => (
-        <div class={`mb-4 p-3 rounded-lg max-w-4/5 ${
-          message.role === 'user' 
-            ? 'bg-blue-500 text-white ml-auto text-right' 
-            : message.role === 'assistant'
-            ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-auto'
-            : 'bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto'
-        }`}>
-          <p class="whitespace-pre-wrap">{message.content}</p>
-        </div>
-      ))}
+    <div id="chat-messages" class="h-96 overflow-y-auto p-6 bg-white dark:bg-gray-800">
+      <div class="mb-4 p-3 rounded-lg max-w-4/5 bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto">
+        <p class="whitespace-pre-wrap">Hello! I'm your AI assistant powered by Ollama. How can I help you today?</p>
+      </div>
     </div>
     
-    <form method="POST" class="flex p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 gap-3">
-      <input type="hidden" name="action" value="chat" />
-      <input type="hidden" name="islandId" value="island-chat-interface" />
-      <textarea 
-        name="message"
-        placeholder="Type your message here..." 
-        rows="3"
-        class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-        required
-      ></textarea>
+    <form id="chat-form" class="flex p-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 gap-3">
+      <div class="flex-1 flex gap-2">
+        <textarea 
+          id="chat-message"
+          name="message"
+          placeholder="Type your message here..." 
+          rows="3"
+          class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        ></textarea>
+        <button 
+          type="button" 
+          id="voice-button"
+          class="flex items-center justify-center px-3 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Start voice input"
+        >
+          <span id="mic-icon" class="text-xl">🎤</span>
+        </button>
+      </div>
       <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium transition-colors">
         Send
       </button>
     </form>
-    
-    <form method="POST" class="text-center pb-4">
-      <input type="hidden" name="action" value="clear" />
-      <input type="hidden" name="islandId" value="island-chat-interface" />
-      <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm transition-colors">
-        Clear Chat
-      </button>
-    </form>
   </div>
-</ServerIsland>
 
 
 <script>
@@ -80,6 +54,8 @@ const initialState = {
   
   // Optional: Add some client-side enhancements
   document.addEventListener('DOMContentLoaded', () => {
+    console.log('=== CHAT INTERFACE LOADED ===');
+    
     // Auto-scroll to bottom of chat
     const chatMessages = document.querySelector('.chat-messages');
     if (chatMessages) {
@@ -97,5 +73,306 @@ const initialState = {
         }
       });
     });
+
+    // Chat form submission
+    const chatForm = document.getElementById('chat-form');
+    console.log('Chat form found:', chatForm);
+    
+    if (chatForm) {
+      chatForm.addEventListener('submit', async (e) => {
+        console.log('Form submitted!');
+        e.preventDefault();
+        
+        const messageTextarea = document.getElementById('chat-message');
+        const message = messageTextarea.value.trim();
+        console.log('Original message:', message);
+        
+        if (!message) {
+          console.log('No message, returning');
+          return;
+        }
+        
+        // Format the message first, before adding to chat
+        console.log('=== FORMATTING START ===');
+        console.log('Starting punctuation check...');
+        let finalMessage = message.trim();
+        console.log('Original message:', message);
+        console.log('Trimmed message:', finalMessage);
+        
+        // Check if message needs punctuation
+        const hasPunctuation = finalMessage.endsWith('.') || finalMessage.endsWith('!') || finalMessage.endsWith('?');
+        console.log('Has punctuation:', hasPunctuation);
+        
+        if (!hasPunctuation && finalMessage.length > 0) {
+          console.log('Adding punctuation to:', finalMessage);
+          
+          // Capitalize first letter
+          finalMessage = finalMessage.charAt(0).toUpperCase() + finalMessage.slice(1);
+          console.log('After capitalization:', finalMessage);
+          
+          // Add appropriate punctuation based on content
+          if (finalMessage.toLowerCase().startsWith('what') || 
+              finalMessage.toLowerCase().startsWith('how') || 
+              finalMessage.toLowerCase().startsWith('why') || 
+              finalMessage.toLowerCase().startsWith('when') || 
+              finalMessage.toLowerCase().startsWith('where') || 
+              finalMessage.toLowerCase().startsWith('who') || 
+              finalMessage.toLowerCase().startsWith('which') || 
+              finalMessage.toLowerCase().includes('?')) {
+            finalMessage += '?';
+          } else if (finalMessage.toLowerCase().includes('!') || 
+                     finalMessage.toLowerCase().includes('amazing') || 
+                     finalMessage.toLowerCase().includes('wow') || 
+                     finalMessage.toLowerCase().includes('great')) {
+            finalMessage += '!';
+          } else {
+            finalMessage += '.';
+          }
+          console.log('After adding punctuation:', finalMessage);
+        } else {
+          console.log('Message already has punctuation or is empty:', finalMessage);
+        }
+        
+        console.log('=== FINAL MESSAGE ===', finalMessage);
+        
+        // Add the formatted message to chat immediately
+        addMessageToChat('user', finalMessage);
+        // Clear the textarea
+        messageTextarea.value = '';
+        
+        // Show loading state
+        const sendButton = chatForm.querySelector('button[type="submit"]');
+        const originalText = sendButton.textContent;
+        sendButton.textContent = 'Sending...';
+        sendButton.disabled = true;
+        
+        try {
+            
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: finalMessage, model: 'llama2' })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            addMessageToChat('assistant', data.response);
+          } else {
+            const errorData = await response.json();
+            addMessageToChat('system', `Error: ${errorData.error}`);
+          }
+        } catch (error) {
+          console.error('Chat error:', error);
+          addMessageToChat('system', `Error: ${error.message}`);
+        } finally {
+          sendButton.textContent = originalText;
+          sendButton.disabled = false;
+          
+          // Reattach event listeners after form submission
+          setTimeout(() => {
+            const newTextarea = document.getElementById('chat-message');
+            if (newTextarea) {
+              console.log('Reattaching event listeners after form submission');
+              attachRealTimeFormatting(newTextarea);
+            }
+          }, 100);
+        }
+      });
+    }
+
+    // Function to attach real-time formatting to textarea
+    function attachRealTimeFormatting(textarea) {
+      console.log('Attaching real-time formatting to:', textarea);
+      let formatTimeout;
+      
+      // Remove existing listeners first
+      if (textarea._inputHandler) {
+        textarea.removeEventListener('input', textarea._inputHandler);
+      }
+      if (textarea._keyupHandler) {
+        textarea.removeEventListener('keyup', textarea._keyupHandler);
+      }
+      
+      // Create new handlers
+      textarea._inputHandler = (e) => {
+        const text = e.target.value;
+        
+        // Clear previous timeout
+        if (formatTimeout) {
+          clearTimeout(formatTimeout);
+        }
+        
+        // Set timeout to format after user stops typing
+        formatTimeout = setTimeout(() => {
+          // Only format if text has no punctuation and is at least 3 words
+          if (text.trim().length > 0 && 
+              !text.match(/[.!?]$/) && 
+              text.trim().split(' ').length >= 3) {
+            
+            let formatted = text.trim();
+            
+            // Capitalize first letter
+            formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+            
+            // Add appropriate punctuation
+            if (formatted.toLowerCase().startsWith('what') || 
+                formatted.toLowerCase().startsWith('how') || 
+                formatted.toLowerCase().startsWith('why') || 
+                formatted.toLowerCase().startsWith('when') || 
+                formatted.toLowerCase().startsWith('where') || 
+                formatted.toLowerCase().startsWith('who') || 
+                formatted.toLowerCase().startsWith('which')) {
+              formatted += '?';
+            } else if (formatted.toLowerCase().includes('!') || 
+                       formatted.toLowerCase().includes('amazing') || 
+                       formatted.toLowerCase().includes('wow') || 
+                       formatted.toLowerCase().includes('great')) {
+              formatted += '!';
+            } else {
+              formatted += '.';
+            }
+            
+            // Update textarea with formatted text
+            textarea.value = formatted;
+          }
+        }, 1000); // Wait 1 second after user stops typing
+      };
+      
+      textarea._keyupHandler = (e) => {
+        // Keyup event for additional input detection
+      };
+      
+      // Add event listeners
+      textarea.addEventListener('input', textarea._inputHandler);
+      textarea.addEventListener('keyup', textarea._keyupHandler);
+      
+      console.log('Event listeners attached to textarea');
+      
+      // Real-time formatting is now working!
+    }
+    
+    // Get textarea element and attach formatting
+    const messageTextarea = document.getElementById('chat-message');
+    console.log('Textarea found for real-time formatting:', messageTextarea);
+    
+    if (messageTextarea) {
+      console.log('Textarea exists, attaching formatting...');
+      attachRealTimeFormatting(messageTextarea);
+      
+      // Real-time formatting is now working!
+    } else {
+      console.log('Textarea not found for real-time formatting');
+    }
+
+    // Voice input functionality
+    const voiceButton = document.getElementById('voice-button');
+    const micIcon = document.getElementById('mic-icon');
+    
+    if (voiceButton && micIcon && messageTextarea) {
+      let recognition = null;
+      let isListening = false;
+
+      // Check if speech recognition is supported
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          isListening = true;
+          micIcon.textContent = '🔴';
+          voiceButton.setAttribute('aria-label', 'Stop voice input');
+          voiceButton.classList.add('bg-red-500', 'hover:bg-red-600');
+          voiceButton.classList.remove('bg-green-500', 'hover:bg-green-600');
+        };
+
+        recognition.onresult = (event) => {
+          let finalTranscript = '';
+          let interimTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          // Update textarea with the raw transcript (LLM will add punctuation)
+          const currentText = messageTextarea.value;
+          const newText = currentText + finalTranscript;
+          messageTextarea.value = newText;
+          
+          // Trigger input event to activate real-time formatting
+          messageTextarea.dispatchEvent(new Event('input'));
+        };
+
+        recognition.onend = () => {
+          isListening = false;
+          micIcon.textContent = '🎤';
+          voiceButton.setAttribute('aria-label', 'Start voice input');
+          voiceButton.classList.add('bg-green-500', 'hover:bg-green-600');
+          voiceButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+        };
+
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          isListening = false;
+          micIcon.textContent = '🎤';
+          voiceButton.setAttribute('aria-label', 'Start voice input');
+          voiceButton.classList.add('bg-green-500', 'hover:bg-green-600');
+          voiceButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+        };
+
+        voiceButton.addEventListener('click', () => {
+          if (isListening) {
+            recognition.stop();
+          } else {
+            recognition.start();
+          }
+        });
+      } else {
+        // Speech recognition not supported
+        voiceButton.style.display = 'none';
+      }
+    }
+
+
+    // Function to add messages to chat
+    function addMessageToChat(role, content) {
+      console.log('=== ADDING MESSAGE TO CHAT ===');
+      console.log('Role:', role);
+      console.log('Content:', content);
+      
+      const chatContainer = document.getElementById('chat-messages');
+      console.log('Chat container found:', chatContainer);
+      if (!chatContainer) return;
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `mb-4 p-3 rounded-lg max-w-4/5 ${
+        role === 'user' 
+          ? 'bg-blue-500 text-white ml-auto text-right' 
+          : role === 'assistant'
+          ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-auto'
+          : 'bg-yellow-50 dark:bg-yellow-900/20 text-gray-600 dark:text-yellow-300 text-center italic mx-auto'
+      }`;
+      
+      const contentP = document.createElement('p');
+      contentP.className = 'whitespace-pre-wrap';
+      contentP.textContent = content;
+      messageDiv.appendChild(contentP);
+      
+      console.log('Message div created:', messageDiv);
+      console.log('Content P text:', contentP.textContent);
+      
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      
+      console.log('Message added to chat container');
+    }
   });
 </script>

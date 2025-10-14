@@ -71,7 +71,7 @@ const updatedDate = new Date(note.updated_at).toLocaleDateString('en-US', {
 							Personal Wiki
 						</a>
 					</div>
-					<div class="flex items-center">
+					<div class="flex items-center space-x-4">
 						<!-- Search Bar -->
 						<div class="relative">
 							<form action="/search" method="GET" class="flex items-center">
@@ -96,6 +96,13 @@ const updatedDate = new Date(note.updated_at).toLocaleDateString('en-US', {
 								</button>
 							</form>
 						</div>
+						<!-- New Note Button -->
+						<a href="/new-note" class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+							</svg>
+							New Note
+						</a>
 					</div>
         </div>
       </nav>

@@ -4,8 +4,8 @@ import { ServerStateManager, handleIslandAction } from '../utils/serverState.js'
 
 const { id, component, props = {}, serverAction } = Astro.props;
 
-// Generate unique island ID
-const islandId = `island-${id}-${Math.random().toString(36).substr(2, 9)}`;
+// Generate consistent island ID
+const islandId = `island-${id}`;
 
 // Server-side state management
 let serverState = { ...props };
@@ -18,6 +18,13 @@ if (Astro.request.method === 'POST') {
     // Handle server action
     serverState = await handleIslandAction(islandId, action, formData);
   }
+}
+
+// Get current state from state manager
+const stateManager = ServerStateManager.getInstance();
+const currentState = stateManager.getState(islandId);
+if (Object.keys(currentState).length > 0) {
+  serverState = { ...serverState, ...currentState };
 }
 ---
 

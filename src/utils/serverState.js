@@ -66,22 +66,23 @@ export async function handleIslandAction(islandId, action, formData) {
 
 async function handleChatAction(islandId, formData, currentState) {
   const message = formData.get("message");
-  const model = formData.get("model");
+  const model = formData.get("model") || currentState.selectedModel || "llama2";
 
-  if (!message || !model) {
-    return { ...currentState, error: "Message and model are required" };
+  if (!message) {
+    return { ...currentState, error: "Message is required" };
   }
 
   try {
-    // Call Ollama API
-    const response = await fetch("http://localhost:11434/api/chat", {
+    // Call the chat API endpoint
+    const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, model }),
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || `API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -108,8 +109,7 @@ async function handleChatAction(islandId, formData, currentState) {
     console.error("Chat action error:", error);
     return {
       ...currentState,
-      error:
-        "Failed to get response from Ollama. Make sure Ollama is running on localhost:11434",
+      error: `Failed to get response: ${error.message}`,
     };
   }
 }
