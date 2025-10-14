@@ -1,8 +1,8 @@
-# Personal Wiki with Ollama
+# MyNotes with Ollama
 
 An AI-powered personal knowledge management system built with Astro, featuring Ollama integration for intelligent chat, semantic search, and note management.
 
-![Personal Wiki](https://img.shields.io/badge/Astro-5.14.4-FF5D01?style=flat-square&logo=astro)
+![MyNotes](https://img.shields.io/badge/Astro-5.14.4-FF5D01?style=flat-square&logo=astro)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?style=flat-square&logo=tailwind-css)
 ![Ollama](https://img.shields.io/badge/Ollama-AI-000000?style=flat-square)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
@@ -40,7 +40,9 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 - **Responsive Design**: Works perfectly on desktop and mobile
 - **Server Islands**: Interactive server-side components
 - **Tailwind CSS**: Modern, utility-first styling
-- **Accessibility**: Full keyboard navigation and screen reader support
+- **Accessibility**: WCAG AA compliant with full keyboard navigation and screen reader support
+- **Semantic HTML**: Proper landmarks and ARIA attributes for assistive technologies
+- **Skip Links**: Keyboard navigation shortcuts for efficient browsing
 
 ### 🔍 Advanced Search
 
@@ -48,6 +50,15 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 - **AI Semantic Search**: Understands meaning and finds conceptually related content
 - **Tag Filtering**: Search by tags and categories
 - **Real-time Results**: Instant search feedback
+
+### ♿ Accessibility Features
+
+- **WCAG AA Compliance**: Meets Web Content Accessibility Guidelines standards
+- **Screen Reader Support**: Proper ARIA labels and semantic HTML structure
+- **Keyboard Navigation**: Full keyboard accessibility with skip links
+- **High Contrast**: Optimized color schemes for better visibility
+- **Voice Input**: Hands-free note creation with multi-language support
+- **Focus Management**: Clear focus indicators for all interactive elements
 
 ## 🚀 Quick Start
 
@@ -105,13 +116,13 @@ An AI-powered personal knowledge management system built with Astro, featuring O
 ## 📁 Project Structure
 
 ```
-personal-wiki/
+mynotes/
 ├── src/
 │   ├── components/          # Reusable Astro components
 │   │   ├── ChatInterface.astro
 │   │   ├── DarkModeToggle.astro
-│   │   ├── RelatedNotes.astro
-│   │   └── ServerIsland.astro
+│   │   ├── VoiceInput.astro
+│   │   └── RelatedNotes.astro
 │   ├── lib/                 # Database and utilities
 │   │   └── db.js
 │   ├── pages/               # Astro pages and API routes
@@ -119,11 +130,14 @@ personal-wiki/
 │   │   │   ├── chat.js
 │   │   │   ├── notes.js
 │   │   │   ├── search.js
-│   │   │   └── suggest-tags.js
+│   │   │   ├── suggest-tags.js
+│   │   │   └── related-notes.js
 │   │   ├── note/            # Dynamic note pages
 │   │   │   └── [slug]/
+│   │   │       └── edit.astro
 │   │   ├── index.astro       # Home page
 │   │   ├── new-note.astro    # Create note page
+│   │   ├── notes.astro       # All notes page
 │   │   └── search.astro      # Search page
 │   ├── styles/              # Global styles
 │   │   └── global.css
@@ -131,8 +145,8 @@ personal-wiki/
 │       └── serverState.js
 ├── public/                  # Static assets
 ├── astro.config.mjs        # Astro configuration
-├── tailwind.config.mjs     # Tailwind configuration
-└── package.json
+├── package.json
+└── README.md
 ```
 
 ## 🎯 Usage
@@ -172,9 +186,14 @@ personal-wiki/
 
 The application works with various Ollama models. Popular choices:
 
+- `llama3` - Latest general purpose model (default)
 - `llama2` - General purpose, good for chat and analysis
 - `codellama` - Specialized for code-related content
 - `mistral` - Fast and efficient for general tasks
+- `gemma` - Google's efficient model family
+- `phi3` - Microsoft's compact model
+- `neural-chat` - Conversational AI model
+- `orca-mini` - Lightweight conversational model
 
 ### Database
 
@@ -236,3 +255,14 @@ If you encounter any issues or have questions:
 ---
 
 **Built with ❤️ using Astro, Ollama, and modern web technologies**
+
+---
+
+## 🆕 Recent Updates
+
+- **Rebranded** from "Personal Wiki" to "MyNotes" for better clarity
+- **Enhanced Accessibility** with WCAG AA compliance and screen reader support
+- **Improved Dark Mode** with proper text contrast and visibility
+- **Added 17 AI Models** including llama3, gemma, phi3, and more
+- **Voice Input Improvements** with better multi-language support
+- **Semantic HTML** structure for better assistive technology compatibility
