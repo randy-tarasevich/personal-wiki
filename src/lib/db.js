@@ -1,11 +1,7 @@
 import Database from "better-sqlite3";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = process.env.NODE_ENV === 'production' 
-  ? '/var/www/personal-wiki/data/wiki.db'
-  : path.join(__dirname, "../../data/wiki.db");
+// Just use a simple absolute path
+const dbPath = '/Users/rtarasevich/personal-wiki/data/wiki.db';
 
 const db = new Database(dbPath);
 
@@ -48,6 +44,22 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    token TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL
+  );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 `);
 
 export default db;
