@@ -1,7 +1,11 @@
 import Database from "better-sqlite3";
+import fs from "fs";
 
-// Just use a simple absolute path
-const dbPath = '/Users/rtarasevich/personal-wiki/data/wiki.db';
+const macPath = '/Users/rtarasevich/personal-wiki/data/wiki.db';
+const serverPath = '/var/www/personal-wiki/data/wiki.db';
+
+// Use Mac path if it exists, otherwise use server path
+const dbPath = fs.existsSync('/Users/rtarasevich/personal-wiki/data') ? macPath : serverPath;
 
 const db = new Database(dbPath);
 
