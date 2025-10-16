@@ -1,256 +1,302 @@
 ---
-import ChatInterface from '../components/ChatInterface.astro';
 import DarkModeToggle from '../components/DarkModeToggle.astro';
-import db from '../lib/db.js';
-import '../styles/global.css';
 
-// Check for success/error messages
-const url = new URL(Astro.request.url);
-const success = url.searchParams.get('success');
-const slug = url.searchParams.get('slug');
-
-// If user is not authenticated, redirect to landing page
-if (!Astro.locals.user) {
-  return Astro.redirect('/landing');
-}
-
-// Fetch recent notes with tags
-let recentNotes = [];
-try {
-  recentNotes = db.prepare(`
-    SELECT n.id, n.title, n.slug, n.content, n.created_at, n.updated_at,
-           GROUP_CONCAT(t.name) as tags
-    FROM notes n
-    LEFT JOIN note_tags nt ON n.id = nt.note_id
-    LEFT JOIN tags t ON nt.tag_id = t.id
-    GROUP BY n.id
-    ORDER BY n.updated_at DESC 
-    LIMIT 5
-  `).all();
-} catch (error) {
-  console.error('Error fetching notes:', error);
+// Landing page for MyNotes - AI-Powered Personal Wiki
+// If user is authenticated, redirect to dashboard
+if (Astro.locals.user) {
+  return Astro.redirect('/dashboard');
 }
 ---
 
+<!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyNotes - AI-Powered Personal Wiki</title>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>MyNotes with Ollama</title>
+  <link rel="stylesheet" href="/src/styles/global.css">
 	</head>
-	<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 min-h-screen transition-colors duration-300">
-		<!-- Skip to main content link for keyboard users -->
-		<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">Skip to main content</a>
-		<main id="main-content" class="container mx-auto px-4 py-8 max-w-7xl">
-			<!-- Navigation -->
-			<nav class="mb-12" aria-label="Main navigation">
-				<div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-gray-900/20 border border-white/20 dark:border-gray-700/50 p-6">
-					<div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
-					<!-- Left: App Title and Dark Mode (Mobile) -->
-					<div class="flex items-center justify-between lg:justify-start">
-						<a href="/" class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 dark:hover:from-blue-300 dark:hover:to-purple-300 transition-all duration-300">
-							MyNotes
-						</a>
-						<!-- Dark Mode Toggle - Mobile only -->
-						<div class="flex lg:hidden">
-							<DarkModeToggle />
-						</div>
-					</div>
-					
-					<!-- User info and logout - Mobile: Full width, Desktop: Inline -->
-					{Astro.locals.user && (
-					  <div class="flex items-center justify-between lg:justify-end lg:ml-4">
-					    <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">
-					      Welcome, {Astro.locals.user.username}
-					    </span>
-					    <form method="POST" action="/api/logout" class="inline">
-					      <button
-					        type="submit"
-					        class="text-sm bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded-lg transition-colors"
-					      >
-					        Logout
-					      </button>
-					    </form>
-					  </div>
-					)}
-					
-					<!-- Center: New Note Button (Desktop only) -->
-					<div class="hidden lg:flex items-center">
-						<a href="/new-note" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-							<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-							</svg>
-							New Note
-						</a>
-					</div>
-					
-					<!-- Right: Search Bar and Dark Mode -->
-					<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:justify-end">
-						<!-- Search Bar -->
-						<div class="relative flex-1 sm:flex-initial">
-							<form action="/search" method="GET" class="flex items-center">
-								<div class="relative w-full sm:w-80">
-									<input
-										type="text"
-										name="q"
-										placeholder="Search notes..."
-										class="w-full px-4 py-3 pl-12 pr-4 border border-gray-200 dark:border-gray-600 rounded-xl bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-md"
-									/>
-									<svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-									</svg>
-								</div>
-								<button
-									type="submit"
-									class="ml-3 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-								>
-									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-									</svg>
-								</button>
-							</form>
-						</div>
-						
-						<!-- Dark Mode Toggle - Desktop only -->
-						<div class="hidden lg:flex items-center">
-							<DarkModeToggle />
-						</div>
-						
-						<!-- Mobile: New Note Button -->
-						<div class="flex lg:hidden">
-							<a href="/new-note" class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-								<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-								</svg>
-								New Note
-							</a>
-						</div>
-					</div>
-				</div>
-			</nav>
-			
-			{success === 'note-created' && (
-				<div class="mb-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 rounded">
-					<div class="flex">
-						<div class="flex-shrink-0">
-							<svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-							</svg>
-						</div>
-						<div class="ml-3">
-							<p class="text-sm text-green-800 dark:text-green-200">
-								Note created successfully! {slug && `Slug: ${slug}`}
-							</p>
-						</div>
-					</div>
-				</div>
-			)}
-			
-			<section class="text-center mb-16" aria-labelledby="main-heading">
-				<h1 id="main-heading" class="text-6xl font-bold text-gray-900 dark:text-white mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-pulse">
-					MyNotes
-				</h1>
-				<p class="text-2xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto leading-relaxed font-light">
-					AI-Powered Knowledge Base
-				</p>
-				<p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-					Create, organize, and discover your notes with intelligent AI assistance
-				</p>
-			</section>
-			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-				<!-- Chat Interface -->
-				<section class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden transition-all duration-300 hover:shadow-3xl hover:scale-[1.02]" aria-labelledby="chat-heading">
-					<ChatInterface />
-				</section>
-				
-				<!-- Recent Notes -->
-				<section class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden transition-all duration-300 hover:shadow-3xl hover:scale-[1.02]" aria-labelledby="recent-notes-heading">
-					<div class="p-8 border-b border-gray-200/50 dark:border-gray-600/50 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-gray-700/50 dark:to-gray-600/50">
-						<h2 id="recent-notes-heading" class="text-2xl font-bold text-gray-800 dark:text-gray-200 flex items-center mb-2">
-							<svg class="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-							</svg>
-							Recent Notes
-						</h2>
-						<p class="text-sm text-gray-500 dark:text-gray-400">Your latest knowledge entries</p>
-					</div>
-					
-					<div class="p-6">
-						{recentNotes.length > 0 ? (
-							<div class="space-y-4">
-								{recentNotes.map((note) => (
-									<div class="group border border-gray-200/50 dark:border-gray-600/50 rounded-2xl p-6 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer">
-										<a href={`/note/${note.slug}`} class="block">
-											<h3 class="font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-												{note.title}
-											</h3>
-											<p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 leading-relaxed">
-												{note.content.substring(0, 120)}...
-											</p>
-											{note.tags && (
-												<div class="flex flex-wrap gap-2 mb-4">
-													{note.tags.split(',').slice(0, 3).map((tag) => (
-														<span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full border border-blue-200/50 dark:border-blue-700/50">
-															{tag.trim()}
-														</span>
-													))}
-													{note.tags.split(',').length > 3 && (
-														<span class="text-xs text-gray-500 dark:text-gray-400 font-medium">
-															+{note.tags.split(',').length - 3} more
-														</span>
-													)}
-												</div>
-											)}
-											<div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-												<span>
-													{new Date(note.updated_at).toLocaleDateString('en-US', {
-														month: 'short',
-														day: 'numeric',
-														year: 'numeric'
-													})}
-												</span>
-												<span class="flex items-center">
-													<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-													</svg>
-													View
-												</span>
-											</div>
-										</a>
-									</div>
-								))}
-								
-								<div class="pt-4 border-t border-gray-200 dark:border-gray-600">
-									<a href="/notes" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center justify-center">
-										View all notes
-										<svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-										</svg>
-									</a>
-								</div>
-							</div>
-						) : (
-							<div class="text-center py-12">
-								<div class="w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-									<svg class="w-10 h-10 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-									</svg>
-								</div>
-								<h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No notes yet</h3>
-								<p class="text-gray-500 dark:text-gray-400 mb-6">Start building your knowledge base</p>
-								<a href="/new-note" class="hidden lg:inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-									<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-									</svg>
-									Create your first note
-								</a>
-							</div>
-						)}
-					</div>
-				</div>
-			</div>
-		</main>
+<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 min-h-screen transition-colors duration-300">
+  <!-- Skip to main content link for keyboard users -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">Skip to main content</a>
+  
+  <!-- Navigation -->
+  <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/50 sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-3">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+            MyNotes
+          </span>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <DarkModeToggle />
+          <a href="/login" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            Login
+          </a>
+          <a href="/signup" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Gradient -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"></div>
+      
+      <div class="container mx-auto max-w-7xl relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <!-- Left Column - Text Content -->
+          <div class="text-center lg:text-left">
+            <h1 class="text-6xl font-bold text-gray-900 dark:text-white mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-pulse">
+              Track Your Knowledge
+            </h1>
+            <p class="text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              Get organized while building your knowledge base! Our AI-powered app will help you stay on track with your learning and research.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <a href="/signup" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                Sign up / Login
+              </a>
+              <a href="#features" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+                Learn More
+              </a>
+            </div>
+          </div>
+          
+          <!-- Right Column - iPhone Mockup -->
+          <div class="flex justify-center lg:justify-end">
+            <div class="relative">
+              <!-- iPhone Frame -->
+              <div class="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                <div class="w-full h-full bg-white dark:bg-gray-800 rounded-[2.5rem] overflow-hidden relative">
+                  <!-- Status Bar -->
+                  <div class="flex justify-between items-center px-6 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-1">
+                      <div class="w-1 h-1 bg-gray-900 dark:bg-white rounded-full"></div>
+                      <div class="w-1 h-1 bg-gray-900 dark:bg-white rounded-full"></div>
+                      <div class="w-1 h-1 bg-gray-900 dark:bg-white rounded-full"></div>
+                    </div>
+                    <div class="text-xs font-semibold text-gray-900 dark:text-white">9:41</div>
+                    <div class="flex items-center space-x-1">
+                      <div class="w-4 h-2 border border-gray-900 dark:border-white rounded-sm">
+                        <div class="w-3 h-1 bg-gray-900 dark:bg-white rounded-sm m-0.5"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- App Content -->
+                  <div class="h-full bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+                    <!-- Navigation -->
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/50 p-3">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                          <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-2">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                          </div>
+                          <span class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                            MyNotes
+                          </span>
+                        </div>
+                        <div class="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                      </div>
+                    </div>
+                    
+                    <!-- Main Content -->
+                    <div class="p-3 h-full overflow-y-auto">
+                      <!-- Hero Section -->
+                      <div class="text-center mb-4">
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                          MyNotes
+                        </h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">AI-Powered Knowledge Base</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Create, organize, and discover your notes with intelligent AI assistance</p>
+                      </div>
+                      
+                      <!-- Two Column Layout -->
+                      <div class="grid grid-cols-1 gap-3">
+                        <!-- Chat Interface -->
+                        <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden">
+                          <div class="p-3 border-b border-gray-200/50 dark:border-gray-600/50 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-gray-700/50 dark:to-gray-600/50">
+                            <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center">
+                              <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                              </svg>
+                              AI Assistant
+                            </h2>
+                          </div>
+                          <div class="p-3">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mb-3">
+                              <p class="text-sm text-gray-700 dark:text-gray-300">Hello! I'm your AI assistant. How can I help you today?</p>
+                            </div>
+                            <div class="flex space-x-2">
+                              <input type="text" placeholder="Ask me anything..." class="flex-1 px-3 py-2 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                              <button class="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                                Send
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Recent Notes -->
+                        <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden">
+                          <div class="p-3 border-b border-gray-200/50 dark:border-gray-600/50 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-gray-700/50 dark:to-gray-600/50">
+                            <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center">
+                              <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                              </svg>
+                              Recent Notes
+                            </h2>
+                          </div>
+                          <div class="p-3">
+                            <div class="text-center py-6">
+                              <div class="w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                              </div>
+                              <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">No notes yet</h3>
+                              <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Start building your knowledge base</p>
+                              <button class="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                                Create Note
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4 bg-white dark:bg-gray-900">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            Powerful Features
+          </h2>
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Everything you need to organize your knowledge and boost your productivity
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">AI-Powered Intelligence</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+              Get smart suggestions, semantic search, and intelligent note organization with advanced AI models.
+            </p>
+          </div>
+          
+          <!-- Feature 2 -->
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Voice Input</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+              Dictate your notes hands-free with multi-language voice recognition and smart formatting.
+            </p>
+          </div>
+          
+          <!-- Feature 3 -->
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Smart Search</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+              Find exactly what you need with semantic search that understands meaning and context.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
+      <div class="container mx-auto max-w-4xl text-center">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          Sign up today and try it out!
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
+          Organize your knowledge with AI assistance and stay on top of your learning goals.
+        </p>
+        <a href="/signup" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+          Sign up / Login
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Simple Copyright Footer -->
+  <footer class="bg-gray-900 dark:bg-gray-950 text-white py-8 px-4">
+    <div class="container mx-auto max-w-6xl text-center">
+      <p class="text-gray-400 text-sm">
+        © 2025 MyNotes. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
 	</body>
+  
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    
+    function showSlide(n) {
+      const slides = document.querySelectorAll('.feature-slide');
+      slides.forEach(slide => slide.classList.add('hidden'));
+      slides[n].classList.remove('hidden');
+    }
+    
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      showSlide(currentSlide);
+    }
+    
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      showSlide(currentSlide);
+    }
+    
+    // Auto-advance slides every 5 seconds
+    setInterval(nextSlide, 5000);
+    
+    // Initialize
+    showSlide(0);
+  </script>
 </html>
