@@ -260,6 +260,7 @@ If you encounter any issues or have questions:
 
 ## 🆕 Recent Updates
 
+- **Fixed Routing** to show landing page at root URL instead of login page
 - **Rebranded** from "Personal Wiki" to "MyNotes" for better clarity
 - **Enhanced Accessibility** with WCAG AA compliance and screen reader support
 - **Improved Dark Mode** with proper text contrast and visibility
