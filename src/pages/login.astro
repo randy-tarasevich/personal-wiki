@@ -1,5 +1,6 @@
 ---
 import { verifyPassword, createSession } from '../lib/auth';
+import DarkModeToggle from '../components/DarkModeToggle.astro';
 
 let error = '';
 
@@ -37,65 +38,124 @@ if (Astro.request.method === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Personal Wiki</title>
+  <title>Login - MyNotes</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="/src/styles/global.css">
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-  <div class="max-w-md w-full mx-4">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-      <h1 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-        📚 Personal Wiki
-      </h1>
-      
-      {error && (
-        <div class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 rounded">
-          {error}
-        </div>
-      )}
-      
-      <form method="POST" class="space-y-6">
-        <div>
-          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            required
-            autofocus
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter username"
-          />
-        </div>
-        
-        <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter password"
-          />
-        </div>
-        
-        <button
-          type="submit"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-        >
-          Login
-        </button>
-      </form>
-      
-      <div class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-        Don't have an account?
-        <a href="/signup" class="text-blue-500 hover:text-blue-600">Sign up</a>
-      </div>	
+<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 min-h-screen transition-colors duration-300">
+  <!-- Skip to main content link for keyboard users -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">Skip to main content</a>
+  
+  <main id="main-content" class="min-h-screen flex items-center justify-center px-4 py-8">
+    <!-- Dark Mode Toggle - Fixed Position -->
+    <div class="fixed top-4 right-4 z-50">
+      <DarkModeToggle />
     </div>
-  </div>
+    
+    <div class="max-w-md w-full">
+      <!-- Main Login Card -->
+      <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl dark:shadow-gray-900/20 border border-white/20 dark:border-gray-700/50 overflow-hidden transition-all duration-300 hover:shadow-3xl hover:scale-[1.02]">
+        
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-700/80 dark:to-gray-600/80 px-8 py-8 border-b border-gray-200/50 dark:border-gray-600/50">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">
+              MyNotes
+            </h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">AI-Powered Knowledge Base</p>
+          </div>
+        </div>
+        
+        <!-- Form Section -->
+        <div class="p-8">
+          {error && (
+            <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-lg">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-red-800 dark:text-red-200">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <form method="POST" class="space-y-6">
+            <div>
+              <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                autofocus
+                class="w-full px-4 py-3 border border-gray-200/50 dark:border-gray-600/50 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                placeholder="Enter your username"
+              />
+            </div>
+            
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                class="w-full px-4 py-3 border border-gray-200/50 dark:border-gray-600/50 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                placeholder="Enter your password"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              <span class="flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                </svg>
+                Sign In
+              </span>
+            </button>
+          </form>
+          
+          <div class="mt-8 text-center">
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-200/50 dark:border-gray-600/50"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-white/80 dark:bg-gray-800/80 text-gray-500 dark:text-gray-400">New to MyNotes?</span>
+              </div>
+            </div>
+            
+            <div class="mt-6">
+              <a 
+                href="/signup" 
+                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Create Account
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 </html>

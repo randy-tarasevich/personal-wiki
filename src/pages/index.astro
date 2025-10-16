@@ -9,6 +9,11 @@ const url = new URL(Astro.request.url);
 const success = url.searchParams.get('success');
 const slug = url.searchParams.get('slug');
 
+// If user is not authenticated, redirect to landing page
+if (!Astro.locals.user) {
+  return Astro.redirect('/landing');
+}
+
 // Fetch recent notes with tags
 let recentNotes = [];
 try {

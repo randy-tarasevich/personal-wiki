@@ -1,0 +1,924 @@
+---
+import DarkModeToggle from '../components/DarkModeToggle.astro';
+
+// Landing page for MyNotes - AI-Powered Personal Wiki
+// If user is authenticated, redirect to dashboard
+if (Astro.locals.user) {
+  return Astro.redirect('/');
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyNotes - AI-Powered Personal Wiki</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/src/styles/global.css">
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 min-h-screen transition-colors duration-300">
+  <!-- Skip to main content link for keyboard users -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50">Skip to main content</a>
+  
+  <!-- Navigation -->
+  <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/50 sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-3">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+          <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+            MyNotes
+          </span>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <DarkModeToggle />
+          <a href="/login" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            Login
+          </a>
+          <a href="/signup" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section class="py-20 px-4 relative overflow-hidden">
+      <!-- Background Gradient -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700"></div>
+      
+      
+      <div class="container mx-auto max-w-7xl relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <!-- Left Column - Text Content -->
+          <div class="text-center lg:text-left">
+            <h1 class="text-6xl font-bold text-gray-900 dark:text-white mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-pulse">
+              Track Your Knowledge
+            </h1>
+            <p class="text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              Get organized while building your knowledge base! Our AI-powered app will help you stay on track with your learning and research.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <a href="/signup" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                Sign up / Login
+              </a>
+              <a href="#features" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+                Learn More
+              </a>
+            </div>
+          </div>
+          
+          <!-- Right Column - iPhone Mockup -->
+          <div class="flex justify-center lg:justify-end">
+            <div class="relative">
+              <!-- iPhone Frame -->
+              <div class="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                <div class="w-full h-full bg-white dark:bg-gray-800 rounded-[2.5rem] overflow-hidden relative">
+                  <!-- Status Bar -->
+                  <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-12 flex items-center justify-between px-6 text-white text-sm font-semibold">
+                    <span>9:41</span>
+                    <div class="flex items-center space-x-1">
+                      <div class="w-1 h-1 bg-white rounded-full"></div>
+                      <div class="w-1 h-1 bg-white rounded-full"></div>
+                      <div class="w-1 h-1 bg-white rounded-full"></div>
+                      <div class="w-6 h-3 border border-white rounded-sm">
+                        <div class="w-4 h-2 bg-white rounded-sm m-0.5"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- App Content -->
+                  <div class="p-4 h-full overflow-y-auto">
+                    <!-- Navigation -->
+                    <div class="flex items-center justify-between mb-6">
+                      <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        MyNotes
+                      </h2>
+                      <div class="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+                    </div>
+                    
+                    <!-- Chat Interface -->
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-4 mb-4">
+                      <div class="flex items-center mb-3">
+                        <div class="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
+                          <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                          </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-blue-600 dark:text-blue-400">AI Assistant</span>
+                      </div>
+                      <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-3 mb-3">
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Hello! I'm your AI assistant. How can I help you today?</p>
+                      </div>
+                      <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl p-3 ml-8">
+                        <p class="text-sm">What's the best way to organize my research notes?</p>
+                      </div>
+                    </div>
+                    
+                    <!-- Recent Notes -->
+                    <div class="space-y-3">
+                      <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Recent Notes</h3>
+                      <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-3 border border-gray-200/50 dark:border-gray-600/50">
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">Machine Learning Basics</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Understanding neural networks and deep learning concepts...</p>
+                        <div class="flex flex-wrap gap-1 mt-2">
+                          <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full">AI</span>
+                          <span class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs rounded-full">ML</span>
+                        </div>
+                      </div>
+                      <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-3 border border-gray-200/50 dark:border-gray-600/50">
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">Project Ideas</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Brainstorming new applications for AI technology...</p>
+                        <div class="flex flex-wrap gap-1 mt-2">
+                          <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs rounded-full">Ideas</span>
+                          <span class="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-xs rounded-full">Projects</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose MyNotes Section -->
+    <section class="py-16 px-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+      <div class="container mx-auto max-w-6xl">
+
+        <!-- Benefits Showcase - GPT-Optimized Design -->
+        <div class="space-y-24">
+          <!-- Primary Value Proposition - Direct on Page -->
+          <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+              Transform Your Research with 
+              <span class="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">Smart AI</span>
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-10 max-w-3xl mx-auto">
+              Stop losing track of your ideas. MyNotes uses advanced AI to understand context, suggest connections, and help you discover insights you never knew existed in your own knowledge.
+            </p>
+            
+            <!-- Key Benefits Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Lightning Fast</h3>
+                <p class="text-gray-600 dark:text-gray-300">Find any note in 0.1 seconds</p>
+              </div>
+              <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Secure & Private</h3>
+                <p class="text-gray-600 dark:text-gray-300">Your data stays yours</p>
+              </div>
+              <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Voice Input</h3>
+                <p class="text-gray-600 dark:text-gray-300">Speak your thoughts</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Problem-Solution Framework -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <!-- Problem Side -->
+            <div class="space-y-8">
+              <div>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Knowledge Scattered Everywhere?</h3>
+                <div class="space-y-4">
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">Notes scattered across multiple apps and devices</p>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">Can't find that important insight you wrote last week</p>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">No connections between related ideas and concepts</p>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">Time wasted searching instead of creating</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Solution Side -->
+            <div class="space-y-8">
+              <div>
+                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">AI-Powered Knowledge Management</h3>
+                <div class="space-y-4">
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">Everything in one place, perfectly organized</p>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">AI finds connections you never noticed</p>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">Instant search across all your knowledge</p>
+                  </div>
+                  <div class="flex items-start">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                    <p class="text-gray-600 dark:text-gray-300">Focus on creating, not organizing</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-20 px-4">
+      <div class="max-w-7xl mx-auto">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+          <h2 class="text-5xl font-bold text-gray-900 dark:text-white mb-6 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+            Features and Details
+          </h2>
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Everything you need to organize, discover, and grow your knowledge with AI assistance
+          </p>
+        </div>
+
+        <!-- Main Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <!-- AI Chat Assistant -->
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">AI Chat Assistant</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              Get instant help with your research. Ask questions about your notes and get AI-powered insights and suggestions.
+            </p>
+            <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+              <li>• Context-aware responses</li>
+              <li>• Voice input support</li>
+              <li>• Multiple AI models</li>
+            </ul>
+          </div>
+
+          <!-- Smart Note Organization -->
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Smart Organization</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              Automatically organize your notes with AI-powered tagging and intelligent categorization.
+            </p>
+            <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+              <li>• Auto-generated tags</li>
+              <li>• Smart categorization</li>
+              <li>• Related note discovery</li>
+            </ul>
+          </div>
+
+          <!-- Advanced Search -->
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Semantic Search</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              Find notes by meaning, not just keywords. AI understands context and finds relevant content instantly.
+            </p>
+            <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+              <li>• Meaning-based search</li>
+              <li>• Context understanding</li>
+              <li>• Instant results</li>
+            </ul>
+          </div>
+
+          <!-- Knowledge Tracking -->
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Progress Tracking</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              Monitor your learning journey with detailed analytics and knowledge growth insights.
+            </p>
+            <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+              <li>• Learning analytics</li>
+              <li>• Knowledge mapping</li>
+              <li>• Goal tracking</li>
+            </ul>
+          </div>
+
+          <!-- Voice Input -->
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Voice Input</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              Speak your thoughts directly into notes. Perfect for capturing ideas on the go.
+            </p>
+            <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+              <li>• Speech-to-text</li>
+              <li>• Real-time transcription</li>
+              <li>• Hands-free note taking</li>
+            </ul>
+          </div>
+
+          <!-- Cross-Platform Sync -->
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Real-time Sync</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+              Access your knowledge base anywhere. Your notes sync instantly across all devices.
+            </p>
+            <ul class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+              <li>• Instant synchronization</li>
+              <li>• Multi-device access</li>
+              <li>• Offline support</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- App Screenshots Carousel -->
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-8 shadow-2xl mb-16">
+          <div class="text-center mb-8">
+            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              See MyNotes in Action
+            </h3>
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+              Explore different features and pages of the app
+            </p>
+          </div>
+          
+          <!-- Carousel Container -->
+          <div class="relative max-w-4xl mx-auto">
+            <div class="overflow-hidden">
+              <div class="flex transition-transform duration-500 ease-in-out" id="carousel">
+                <!-- Slide 1: Dashboard -->
+                <div class="w-full flex-shrink-0">
+                  <div class="flex justify-center">
+                    <div class="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                      <div class="w-full h-full bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 rounded-[2.5rem] overflow-hidden relative">
+                        <!-- Status Bar -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-8 flex items-center justify-between px-4 text-white text-xs font-semibold">
+                          <span>9:41</span>
+                          <div class="flex items-center space-x-1">
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-4 h-2 border border-white rounded-sm">
+                              <div class="w-3 h-1 bg-white rounded-sm m-0.5"></div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Navigation -->
+                        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg mx-3 mt-3 p-3">
+                          <div class="flex items-center justify-between">
+                            <a href="/" class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                              MyNotes
+                            </a>
+                            <div class="flex items-center gap-2">
+                              <span class="text-xs text-gray-600 dark:text-gray-400">user</span>
+                              <button class="text-xs bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded-lg">
+                                Logout
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Main Content -->
+                        <div class="p-3 h-full overflow-y-auto">
+                          <!-- Hero Section -->
+                          <div class="text-center mb-4">
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                              MyNotes
+                            </h1>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">AI-Powered Knowledge Base</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Create, organize, and discover your notes with intelligent AI assistance</p>
+                          </div>
+                          
+                          <!-- Two Column Layout -->
+                          <div class="grid grid-cols-1 gap-3">
+                            <!-- Chat Interface -->
+                            <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden">
+                              <div class="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-700/80 dark:to-gray-600/80 px-3 py-2 border-b border-gray-200/50 dark:border-gray-600/50">
+                                <h2 class="text-sm font-bold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">AI Assistant</h2>
+                              </div>
+                              <div class="h-24 overflow-y-auto p-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+                                <div class="mb-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 text-gray-600 dark:text-blue-300 text-center border border-blue-200/50 dark:border-blue-700/50">
+                                  <div class="flex items-center justify-center mb-1">
+                                    <div class="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
+                                      <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                      </svg>
+                                    </div>
+                                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">AI Assistant</span>
+                                  </div>
+                                  <p class="text-xs leading-relaxed">Hello! I'm your AI assistant powered by Ollama. How can I help you today?</p>
+                                </div>
+                              </div>
+                              <div class="flex p-2 bg-gradient-to-r from-gray-50/80 to-blue-50/80 dark:from-gray-700/80 dark:to-gray-600/80 border-t border-gray-200/50 dark:border-gray-600/50">
+                                <textarea placeholder="Type your message here..." rows="2" class="flex-1 px-2 py-1 border border-gray-200/50 dark:border-gray-600/50 rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none text-xs"></textarea>
+                                <button class="ml-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-xs font-semibold">Send</button>
+                              </div>
+                            </div>
+                            
+                            <!-- Recent Notes -->
+                            <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden">
+                              <div class="bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-gray-700/50 dark:to-gray-600/50 px-3 py-2 border-b border-gray-200/50 dark:border-gray-600/50">
+                                <h2 class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center">
+                                  <svg class="w-3 h-3 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                  </svg>
+                                  Recent Notes
+                                </h2>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Your latest knowledge entries</p>
+                              </div>
+                              <div class="p-3">
+                                <div class="space-y-2">
+                                  <div class="border border-gray-200/50 dark:border-gray-600/50 rounded-xl p-3 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-gray-700/50 dark:hover:to-gray-600/50">
+                                    <h3 class="font-bold text-gray-900 dark:text-white mb-1 text-sm">Machine Learning Basics</h3>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Understanding neural networks and deep learning concepts...</p>
+                                    <div class="flex flex-wrap gap-1 mb-2">
+                                      <span class="inline-flex items-center px-2 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full">AI</span>
+                                      <span class="inline-flex items-center px-2 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full">ML</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                      <span>Dec 15, 2024</span>
+                                      <span class="flex items-center text-blue-600 dark:text-blue-400">
+                                        <svg class="w-2 h-2 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                        View
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Slide 2: Chat Interface -->
+                <div class="w-full flex-shrink-0">
+                  <div class="flex justify-center">
+                    <div class="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                      <div class="w-full h-full bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 rounded-[2.5rem] overflow-hidden relative">
+                        <!-- Status Bar -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-8 flex items-center justify-between px-4 text-white text-xs font-semibold">
+                          <span>9:41</span>
+                          <div class="flex items-center space-x-1">
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-4 h-2 border border-white rounded-sm">
+                              <div class="w-3 h-1 bg-white rounded-sm m-0.5"></div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Navigation -->
+                        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg mx-3 mt-3 p-3">
+                          <div class="flex items-center justify-between">
+                            <a href="/" class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                              MyNotes
+                            </a>
+                            <div class="flex items-center gap-2">
+                              <span class="text-xs text-gray-600 dark:text-gray-400">user</span>
+                              <button class="text-xs bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded-lg">
+                                Logout
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Chat Interface -->
+                        <div class="mx-3 mt-3 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 overflow-hidden">
+                          <!-- Chat Header -->
+                          <div class="bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-700/80 dark:to-gray-600/80 px-3 py-2 border-b border-gray-200/50 dark:border-gray-600/50">
+                            <div class="flex items-center justify-between">
+                              <h2 class="text-sm font-bold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">AI Assistant</h2>
+                              <div class="flex items-center gap-2">
+                                <button class="text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-2 py-1 rounded-lg font-semibold">
+                                  Clear Chat
+                                </button>
+                                <select class="text-xs px-2 py-1 border border-gray-200/50 dark:border-gray-600/50 rounded-lg bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100">
+                                  <option>Llama 3 (8B)</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Chat Messages -->
+                          <div class="h-64 overflow-y-auto p-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+                            <!-- AI Welcome Message -->
+                            <div class="mb-4 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 text-gray-600 dark:text-blue-300 text-center border border-blue-200/50 dark:border-blue-700/50">
+                              <div class="flex items-center justify-center mb-2">
+                                <div class="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
+                                  <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                  </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">AI Assistant</span>
+                              </div>
+                              <p class="text-xs leading-relaxed">Hello! I'm your AI assistant powered by Ollama. How can I help you today?</p>
+                            </div>
+                            
+                            <!-- User Message -->
+                            <div class="mb-4 p-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white ml-8 text-right">
+                              <p class="text-xs">What's the best way to organize my research notes?</p>
+                            </div>
+                            
+                            <!-- AI Response -->
+                            <div class="mb-4 p-3 rounded-xl bg-gradient-to-r from-gray-100 to-blue-50 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-gray-200 border border-gray-200/50 dark:border-gray-600/50">
+                              <p class="text-xs leading-relaxed">I recommend using tags and creating connections between related concepts. Would you like me to suggest some tags for your recent notes?</p>
+                            </div>
+                            
+                            <!-- User Message -->
+                            <div class="mb-4 p-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white ml-8 text-right">
+                              <p class="text-xs">Yes, that would be helpful!</p>
+                            </div>
+                            
+                            <!-- AI Response -->
+                            <div class="p-3 rounded-xl bg-gradient-to-r from-gray-100 to-blue-50 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-gray-200 border border-gray-200/50 dark:border-gray-600/50">
+                              <p class="text-xs leading-relaxed">Based on your recent notes, I suggest these tags: "AI", "Machine Learning", "Research", "Neural Networks". These will help you organize and find related content easily.</p>
+                            </div>
+                          </div>
+                          
+                          <!-- Chat Input -->
+                          <div class="flex p-3 bg-gradient-to-r from-gray-50/80 to-blue-50/80 dark:from-gray-700/80 dark:to-gray-600/80 border-t border-gray-200/50 dark:border-gray-600/50">
+                            <div class="flex flex-1 gap-2">
+                              <textarea placeholder="Type your message here..." rows="2" class="flex-1 px-2 py-1 border border-gray-200/50 dark:border-gray-600/50 rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none text-xs"></textarea>
+                              <button class="px-3 py-1 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs">
+                                🎤
+                              </button>
+                            </div>
+                            <button class="ml-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl text-xs font-semibold">Send</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Slide 3: Search Results -->
+                <div class="w-full flex-shrink-0">
+                  <div class="flex justify-center">
+                    <div class="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                      <div class="w-full h-full bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 rounded-[2.5rem] overflow-hidden relative">
+                        <!-- Status Bar -->
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-8 flex items-center justify-between px-4 text-white text-xs font-semibold">
+                          <span>9:41</span>
+                          <div class="flex items-center space-x-1">
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                            <div class="w-4 h-2 border border-white rounded-sm">
+                              <div class="w-3 h-1 bg-white rounded-sm m-0.5"></div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Navigation -->
+                        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg mx-3 mt-3 p-3">
+                          <div class="flex items-center justify-between">
+                            <a href="/" class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                              MyNotes
+                            </a>
+                            <div class="flex items-center gap-2">
+                              <span class="text-xs text-gray-600 dark:text-gray-400">user</span>
+                              <button class="text-xs bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded-lg">
+                                Logout
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Search Header -->
+                        <div class="p-3">
+                          <div class="text-center mb-4">
+                            <h1 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Search Notes</h1>
+                            <p class="text-xs text-gray-600 dark:text-gray-300">Find notes using text search or AI-powered semantic search</p>
+                          </div>
+                          
+                          <!-- Search Form -->
+                          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden mb-4">
+                            <div class="p-3">
+                              <form class="space-y-3">
+                                <!-- Search Input -->
+                                <div>
+                                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Search Query</label>
+                                  <div class="relative">
+                                    <input type="text" placeholder="Enter your search terms..." class="w-full px-3 py-2 pl-8 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-xs" value="machine learning algorithms" />
+                                    <svg class="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                  </div>
+                                </div>
+                                
+                                <!-- Search Type Selection -->
+                                <div>
+                                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Search Type</label>
+                                  <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                      <input type="radio" name="type" value="text" class="sr-only" />
+                                      <div class="flex items-center">
+                                        <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <div>
+                                          <div class="text-xs font-medium text-gray-900 dark:text-white">Text Search</div>
+                                          <div class="text-xs text-gray-500 dark:text-gray-400">Fast keyword matching</div>
+                                        </div>
+                                      </div>
+                                    </label>
+                                    
+                                    <label class="flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                      <input type="radio" name="type" value="semantic" class="sr-only" checked />
+                                      <div class="flex items-center">
+                                        <svg class="w-4 h-4 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                        </svg>
+                                        <div>
+                                          <div class="text-xs font-medium text-gray-900 dark:text-white">AI Semantic</div>
+                                          <div class="text-xs text-gray-500 dark:text-gray-400">Understands meaning</div>
+                                        </div>
+                                      </div>
+                                    </label>
+                                  </div>
+                                </div>
+                                
+                                <!-- Search Button -->
+                                <div class="flex justify-center">
+                                  <button class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg text-xs">
+                                    <span class="flex items-center">
+                                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                      </svg>
+                                      Search Notes
+                                    </span>
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                          
+                          <!-- Search Results -->
+                          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <div class="p-3 border-b border-gray-200 dark:border-gray-600">
+                              <div class="flex items-center justify-between">
+                                <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">Search Results</h2>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">AI Semantic Search</div>
+                              </div>
+                            </div>
+                            
+                            <div class="p-3">
+                              <div class="text-xs text-gray-600 dark:text-gray-400 mb-3">Found 2 results</div>
+                              <div class="space-y-2">
+                                <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                  <h3 class="font-medium text-gray-900 dark:text-white mb-1 text-xs">Neural Networks Explained</h3>
+                                  <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Deep dive into how neural networks work and their applications in machine learning...</p>
+                                  <div class="flex flex-wrap gap-1 mb-2">
+                                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">AI</span>
+                                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">Neural Networks</span>
+                                  </div>
+                                  <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                    <span>Dec 15, 2024</span>
+                                    <span class="flex items-center text-purple-600 dark:text-purple-400">
+                                      <svg class="w-2 h-2 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                      </svg>
+                                      View
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                  <h3 class="font-medium text-gray-900 dark:text-white mb-1 text-xs">ML Algorithm Comparison</h3>
+                                  <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Comparing different machine learning algorithms and their use cases for various problems...</p>
+                                  <div class="flex flex-wrap gap-1 mb-2">
+                                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">Algorithms</span>
+                                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs rounded">Comparison</span>
+                                  </div>
+                                  <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                    <span>Dec 14, 2024</span>
+                                    <span class="flex items-center text-purple-600 dark:text-purple-400">
+                                      <svg class="w-2 h-2 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                      </svg>
+                                      View
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Carousel Navigation -->
+            <div class="flex justify-center mt-6 space-x-2">
+              <button onclick="showSlide(0)" class="w-3 h-3 bg-blue-500 rounded-full transition-all duration-300" id="dot-0"></button>
+              <button onclick="showSlide(1)" class="w-3 h-3 bg-gray-300 dark:bg-gray-600 rounded-full transition-all duration-300" id="dot-1"></button>
+              <button onclick="showSlide(2)" class="w-3 h-3 bg-gray-300 dark:bg-gray-600 rounded-full transition-all duration-300" id="dot-2"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Built for Knowledge Workers - Matching Structure -->
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            Built for 
+            <span class="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">Knowledge Workers</span>
+          </h2>
+          <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-10 max-w-3xl mx-auto">
+            Whether you're a researcher, student, or professional, MyNotes adapts to your workflow with intelligent features that grow with your knowledge.
+          </p>
+          
+          <!-- Key Benefits Row -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Research Papers</h3>
+              <p class="text-gray-600 dark:text-gray-300">Organize citations, track sources, and connect ideas across multiple papers</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Meeting Notes</h3>
+              <p class="text-gray-600 dark:text-gray-300">Capture action items, decisions, and follow-ups with AI-powered summaries</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Learning Journey</h3>
+              <p class="text-gray-600 dark:text-gray-300">Track your progress, identify knowledge gaps, and build expertise over time</p>
+            </div>
+          </div>
+          
+          <!-- Key Benefits -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <div class="text-left">
+              <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Perfect for Professionals</h4>
+              <div class="space-y-3">
+                <div class="flex items-start">
+                  <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span class="text-gray-600 dark:text-gray-300">Researchers organizing complex projects</span>
+                </div>
+                <div class="flex items-start">
+                  <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span class="text-gray-600 dark:text-gray-300">Students managing coursework and research</span>
+                </div>
+                <div class="flex items-start">
+                  <div class="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span class="text-gray-600 dark:text-gray-300">Consultants tracking client insights</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-left">
+              <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Why It Works</h4>
+              <div class="space-y-3">
+                <div class="flex items-start">
+                  <div class="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span class="text-gray-600 dark:text-gray-300">AI understands your domain expertise</span>
+                </div>
+                <div class="flex items-start">
+                  <div class="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span class="text-gray-600 dark:text-gray-300">Connects ideas you might have missed</span>
+                </div>
+                <div class="flex items-start">
+                  <div class="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                  <span class="text-gray-600 dark:text-gray-300">Grows smarter with your knowledge</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
+      <div class="container mx-auto max-w-4xl text-center">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          Sign up today and try it out!
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
+          Organize your knowledge with AI assistance and stay on top of your learning goals.
+        </p>
+        <a href="/signup" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
+          Sign up / Login
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Simple Copyright Footer -->
+  <footer class="bg-gray-900 dark:bg-gray-950 text-white py-8 px-4">
+    <div class="container mx-auto max-w-6xl text-center">
+      <p class="text-gray-400 text-sm">
+        © 2025 MyNotes. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  </body>
+  
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    
+    function showSlide(index) {
+      const carousel = document.getElementById('carousel');
+      const dots = document.querySelectorAll('[id^="dot-"]');
+      
+      currentSlide = index;
+      carousel.style.transform = `translateX(-${index * 100}%)`;
+      
+      // Update dots
+      dots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.remove('bg-gray-300', 'dark:bg-gray-600');
+          dot.classList.add('bg-blue-500');
+        } else {
+          dot.classList.remove('bg-blue-500');
+          dot.classList.add('bg-gray-300', 'dark:bg-gray-600');
+        }
+      });
+    }
+    
+    // Auto-advance carousel
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      showSlide(currentSlide);
+    }, 4000);
+  </script>
+</html>
