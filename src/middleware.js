@@ -20,14 +20,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const sessionToken = context.cookies.get("session")?.value;
 
   if (!sessionToken) {
-    return context.redirect("/login");
+    return context.redirect("/landing");
   }
 
   const session = getSession(sessionToken);
 
   if (!session) {
     context.cookies.delete("session", { path: "/" });
-    return context.redirect("/login");
+    return context.redirect("/landing");
   }
 
   context.locals.user = { username: session.username };
