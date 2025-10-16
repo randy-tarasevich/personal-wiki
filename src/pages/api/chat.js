@@ -7,7 +7,7 @@ const ollama = new Ollama({
 
 export async function POST({ request }) {
   try {
-    const { message, model = "llama3", sessionId } = await request.json();
+    const { message, model = "llama3:latest", sessionId } = await request.json();
 
     // Log the model being used for debugging
     console.log(`🤖 Using model: ${model}`);
@@ -146,11 +146,17 @@ Always be helpful and provide accurate information. You can reference the user's
       content: message,
     });
 
-    const response = await ollama.chat({
-      model,
-      messages,
-      stream: false,
-    });
+    // Add timeout and better error handling
+    const response = await Promise.race([
+      ollama.chat({
+        model,
+        messages,
+        stream: false,
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Ollama request timeout')), 30000)
+      )
+    ]);
 
     // Store messages in database if we have a conversation
     if (conversationId) {
@@ -196,9 +202,21 @@ Always be helpful and provide accurate information. You can reference the user's
     );
   } catch (error) {
     console.error("Ollama API error:", error);
+    
+    // Provide more specific error messages
+    let errorMessage = "Failed to get response from Ollama";
+    if (error.message === 'Ollama request timeout') {
+      errorMessage = "Request timed out. Please try again.";
+    } else if (error.message.includes('ECONNREFUSED')) {
+      errorMessage = "Ollama service is not running. Please check the server.";
+    } else if (error.message.includes('model')) {
+      errorMessage = `Model "${model}" not found. Please try a different model.`;
+    }
+    
     return new Response(
       JSON.stringify({
-        error: "Failed to get response from Ollama",
+        error: errorMessage,
+        details: error.message,
       }),
       {
         status: 500,
