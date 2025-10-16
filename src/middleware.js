@@ -2,6 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 import { getSession } from "./lib/auth";
 
 const publicRoutes = [
+  "/",
   "/login",
   "/signup",
   "/api/login",
