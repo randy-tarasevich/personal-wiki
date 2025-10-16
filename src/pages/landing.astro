@@ -4,7 +4,7 @@ import DarkModeToggle from '../components/DarkModeToggle.astro';
 // Landing page for MyNotes - AI-Powered Personal Wiki
 // If user is authenticated, redirect to dashboard
 if (Astro.locals.user) {
-  return Astro.redirect('/');
+  return Astro.redirect('/dashboard');
 }
 ---
 
